@@ -1,0 +1,29 @@
+server:
+  port: 8080
+
+# ===============================
+# DATABASE
+# ===============================
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/wander_book}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:password}
+
+# ===============================
+# JPA / HIBERNATE
+# ===============================
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgresSQLDialect
+        enable_lazy_load_no_trans: true
+    hibernate:
+      ddl-auto: update
+
+#springdoc:
+#  api-docs:
+#    enabled: true
+#  swagger-ui:
+#    enabled: true
