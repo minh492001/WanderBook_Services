@@ -23,7 +23,28 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 500KB
+      max-request-size: 500KB
 
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+
+# ===============================
+# APP PROPERTIES
+# ===============================
+auth:
+  token:
+    jwtSecret: 88fcbfa02ebe24ac11ab6eb676f8cd89033920f202865bf874d73de7e5effde3
+    expirationInMils: 3600000
 
 #springdoc:
 #  api-docs:
