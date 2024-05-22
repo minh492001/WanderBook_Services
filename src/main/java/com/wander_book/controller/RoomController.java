@@ -1,6 +1,7 @@
 package com.wander_book.controller;
 
 import com.wander_book.exception.PhotoRetrievalException;
+import com.wander_book.exception.ResourceNotFoundException;
 import com.wander_book.model.Room;
 import com.wander_book.response.RoomResponse;
 import com.wander_book.service.IRoomService;
@@ -19,6 +20,7 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -73,6 +75,15 @@ public class RoomController {
         theRoom.setPhoto(photoBlob);
         RoomResponse roomResponse = getRoomResponse(theRoom);
         return ResponseEntity.ok(roomResponse);
+    }
+
+    @GetMapping("/room/{roomId}")
+    public ResponseEntity<Optional<RoomResponse>> getRoomById(@PathVariable Long roomId) {
+        Optional<Room> theRoom = roomService.getRoomById(roomId);
+        return theRoom.map(room -> {
+            RoomResponse roomResponse = getRoomResponse(room);
+            return ResponseEntity.ok(Optional.of(roomResponse));
+        }).orElseThrow(() -> new ResourceNotFoundException("Room not found"));
     }
 
     private RoomResponse getRoomResponse(Room room) {
