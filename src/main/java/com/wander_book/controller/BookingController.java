@@ -1,5 +1,6 @@
 package com.wander_book.controller;
 
+import com.wander_book.exception.InvalidBookingRequestException;
 import com.wander_book.model.BookedRoom;
 import com.wander_book.model.Room;
 import com.wander_book.response.BookingResponse;
@@ -10,9 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ public class BookingController {
     private final IBookingService bookingService;
     private final IRoomService roomService;
 
-    @GetMapping("/allBookings")
+    @GetMapping("/all-bookings")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<BookingResponse>> getAllBookings() {
         List<BookedRoom> bookings = bookingService.getAllBookings();
@@ -34,6 +33,16 @@ public class BookingController {
             bookingResponses.add(bookingResponse);
         }
         return ResponseEntity.ok(bookingResponses);
+    }
+
+    @PostMapping("/room/{roomId}/booking")
+    public ResponseEntity<?> saveBooking(@PathVariable Long roomId, @RequestBody BookedRoom bookingRequest) {
+        try {
+            String confirmationCode = bookingService.saveBooking(roomId, bookingRequest);
+            return ResponseEntity.ok("Room booked successfully. Your booking confirmation code is : " + confirmationCode);
+        } catch (InvalidBookingRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     private BookingResponse getBookingResponse(BookedRoom booking) {
