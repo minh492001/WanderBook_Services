@@ -56,6 +56,12 @@ public class BookingController {
         return ResponseEntity.ok(bookingResponses);
     }
 
+    @DeleteMapping("/booking/{bookingId}/delete")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_USER') and #email == principal.username)")
+    public void deleteBooking(@PathVariable Long bookingId) {
+        bookingService.deleteBooking(bookingId);
+    }
+
     private BookingResponse getBookingResponse(BookedRoom booking) {
         Room theRoom = roomService.getRoomById(booking.getRoom().getId()).get();
         RoomResponse room = new RoomResponse(theRoom.getId(), theRoom.getRoomType(), theRoom.getRoomPrice());

@@ -10,4 +10,6 @@ public interface IBookingService {
     String saveBooking(Long roomId, BookedRoom bookingRequest);
 
     List<BookedRoom> getBookingsByUserEmail(String email);
+
+    void deleteBooking(Long bookingId);
 }
