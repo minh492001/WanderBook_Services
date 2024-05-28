@@ -36,9 +36,9 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/delete/{userId}")
+    @DeleteMapping("/delete/{email}")
     @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_USER') and #email == principal.username)")
-    public ResponseEntity<String> deleteUser(@PathVariable("userId") String email) {
+    public ResponseEntity<String> deleteUser(@PathVariable("email") String email) {
         try {
             userService.deleteUser(email);
             return ResponseEntity.ok("User deleted successfully !");
