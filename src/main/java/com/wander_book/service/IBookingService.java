@@ -7,4 +7,5 @@ import java.util.List;
 public interface IBookingService {
     List<BookedRoom> getAllBookings();
 
+    String saveBooking(Long roomId, BookedRoom bookingRequest);
 }
