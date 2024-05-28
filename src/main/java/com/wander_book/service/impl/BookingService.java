@@ -1,6 +1,7 @@
 package com.wander_book.service.impl;
 
 import com.wander_book.exception.InvalidBookingRequestException;
+import com.wander_book.exception.ResourceNotFoundException;
 import com.wander_book.model.BookedRoom;
 import com.wander_book.model.Room;
 import com.wander_book.repository.BookingRepository;
@@ -49,6 +50,11 @@ public class BookingService implements IBookingService {
     @Override
     public void deleteBooking(Long bookingId) {
         bookingRepository.deleteById(bookingId);
+    }
+
+    @Override
+    public BookedRoom findByBookingConfirmationCode(String confirmationCode) {
+        return bookingRepository.findByBookingConfirmationCode(confirmationCode).orElseThrow(() -> new ResourceNotFoundException("Can not find booking with code : " + confirmationCode));
     }
 
     private boolean roomIsAvailable(BookedRoom bookingRequest, List<BookedRoom> existingBookings) {
