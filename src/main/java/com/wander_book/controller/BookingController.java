@@ -1,6 +1,7 @@
 package com.wander_book.controller;
 
 import com.wander_book.exception.InvalidBookingRequestException;
+import com.wander_book.exception.ResourceNotFoundException;
 import com.wander_book.model.BookedRoom;
 import com.wander_book.model.Room;
 import com.wander_book.response.BookingResponse;
@@ -9,6 +10,7 @@ import com.wander_book.service.IBookingService;
 import com.wander_book.service.IRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,17 @@ public class BookingController {
             bookingResponses.add(bookingResponse);
         }
         return ResponseEntity.ok(bookingResponses);
+    }
+
+    @GetMapping("/confirmation/{confirmationCode}")
+    public ResponseEntity<?> getBookingByConfirmationCode(@PathVariable String confirmationCode) {
+        try {
+            BookedRoom booking = bookingService.findByBookingConfirmationCode(confirmationCode);
+            BookingResponse bookingResponse = getBookingResponse(booking);
+            return ResponseEntity.ok(bookingResponse);
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        }
     }
 
     @PostMapping("/room/{roomId}/booking")
