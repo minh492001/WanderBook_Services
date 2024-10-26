@@ -3,6 +3,7 @@ package com.wander_book.security;
 import com.wander_book.security.jwt.AuthTokenFilter;
 import com.wander_book.security.jwt.JwtAuthEntryPoint;
 import com.wander_book.security.user.HotelUserDetailsService;
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
-@ComponentScan(basePackages = {"com.wander_book"})
+//@ComponentScan(basePackages = {"com.wander_book"}) //annotation is generally not needed unless you're trying to scan packages outside the default scope.
 public class WebSecurityConfig {
     private final HotelUserDetailsService userDetailsService;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
@@ -57,10 +58,14 @@ public class WebSecurityConfig {
                         exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+//                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll() // Allows forwards and error requests
                         .requestMatchers("/auth/**", "/rooms/**")
-                        .permitAll().requestMatchers("/roles/**").hasRole("ADMIN")
+                        .permitAll()
+                        .requestMatchers("/role/**").hasRole("ADMIN")
                         .anyRequest().authenticated());
+
         http.authenticationProvider(authenticationProvider());
+
         http.addFilterBefore(authenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

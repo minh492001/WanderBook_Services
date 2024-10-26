@@ -7,10 +7,9 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/wander_book
+    url: jdbc:postgresql://localhost:5432/grand_lusso_hotel
     username: postgres
-    password: 123456
-
+    password: admin@123
 # ===============================
 # JPA / HIBERNATE
 # ===============================
@@ -21,6 +20,7 @@ spring:
         format_sql: true
     #        enable_lazy_load_no_trans: true
     hibernate:
+#      ddl-auto: create-drop
       ddl-auto: update
     show-sql: true
   servlet:
@@ -30,6 +30,7 @@ spring:
 
 logging:
   level:
+#    org.springframework.security: TRACE
     org:
       hibernate:
         SQL: DEBUG

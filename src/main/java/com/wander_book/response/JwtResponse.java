@@ -12,9 +12,9 @@ public class JwtResponse {
     private String email;
     private String token;
     private String type = "Bearer";
-    private List<String> roles;
+    private String  roles;
 
-    public JwtResponse(Long id, String email, String token, List<String> roles) {
+    public JwtResponse(Long id, String email, String token, String roles) {
         this.id = id;
         this.email = email;
         this.token = token;

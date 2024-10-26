@@ -1,17 +1,38 @@
 package com.wander_book.repository;
 
 import com.wander_book.model.Room;
+import com.wander_book.model.enums.RoomState;
+import com.wander_book.model.enums.RoomType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+@Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
 
-    @Query("SELECT DISTINCT r.roomType FROM Room r")
-    List<String> findDistinctRoomTypes();
+    // Find room by room number
+    Optional<Room> findByRoomNumber(String roomNumber);
 
-    @Query("SELECT r from Room r " + "WHERE r.roomType LIKE %:roomType% " + "AND r.id NOT IN (" + "SELECT br.room.id FROM BookedRoom br " + "WHERE ((br.checkInDate <= :checkOutDate) AND (br.checkOutDate >= :checkInDate))" + ")")
-    List<Room> findAvailableRoomsByDatesAndType(LocalDate checkInDate, LocalDate checkOutDate, String roomType);
+    // Find all rooms by state (e.g., available, booked, etc.)
+    List<Room> findByState(RoomState state);
+
+    // Find all rooms by branch id
+    List<Room> findByBranch_Id(Long branchId);
+
+    // Find all rooms by branch id and state
+    List<Room> findByBranch_IdAndState(Long branchId, RoomState state);
+
+    // Find rooms by room type and price range
+    List<Room> findByRoomTypeAndPricePerNightBetween(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice);
+
+    // Find all rooms by branch and room type and within a price range
+    List<Room> findByBranch_IdAndRoomTypeAndPricePerNightBetween(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice);
+
+    // Check if a room exists by room number
+    boolean existsByRoomNumber(String roomNumber);
 }

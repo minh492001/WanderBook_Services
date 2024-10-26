@@ -1,6 +1,6 @@
 package com.wander_book.security.user;
 
-import com.wander_book.model.Users;
+import com.wander_book.model.User;
 import com.wander_book.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +15,7 @@ public class HotelUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Users user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found !"));
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found !"));
         return HotelUserDetails.buildUserDetails(user);
     }
 }

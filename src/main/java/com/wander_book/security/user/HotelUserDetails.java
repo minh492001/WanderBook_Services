@@ -1,6 +1,7 @@
 package com.wander_book.security.user;
 
-import com.wander_book.model.Users;
+import com.wander_book.model.User;
+import com.wander_book.model.enums.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,15 +22,19 @@ public class HotelUserDetails implements UserDetails{
     private Long id;
     private String email;
     private String password;
-    private Collection<GrantedAuthority> authorities;
+    private GrantedAuthority authorities;
+    private Roles role;
 
-    public static HotelUserDetails buildUserDetails(Users user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
-        return new HotelUserDetails(user.getId(), user.getEmail(), user.getPassword(), authorities);
+
+    public static HotelUserDetails buildUserDetails(User user) {
+        GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().name()); // Assuming role is an enum
+        return new HotelUserDetails(user.getId(), user.getEmail(), user.getPassword(), authority, user.getRole());
     }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return List.of(new SimpleGrantedAuthority(role.name())); // Assumes 'role' is an enum in HotelUserDetails
+
     }
 
     @Override

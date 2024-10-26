@@ -27,8 +27,14 @@ public class JwtUtils {
 
     public String generateJwtTokenForUser(Authentication authentication) {
         HotelUserDetails userPrincipal = (HotelUserDetails) authentication.getPrincipal();
-        List<String> roles = userPrincipal.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        return Jwts.builder().setSubject(userPrincipal.getUsername()).claim("roles", roles).setIssuedAt(new Date()).setExpiration(new Date((new Date()).getTime() + jwtExpirationMs)).signWith(key(), SignatureAlgorithm.HS256).compact();
+        String role = userPrincipal.getRole().name();
+        return Jwts.builder()
+                .setSubject(userPrincipal.getUsername())
+                .claim("roles", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+                .signWith(key(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     private Key key() {
