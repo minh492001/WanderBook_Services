@@ -12,17 +12,17 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
-public class Service extends BaseEntity {
+public class ServiceProvide extends BaseEntity {
 
     private String serviceName;
     @Lob
     private String description;
     private BigDecimal price;
 
-    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ReservationService> bookings = new ArrayList<>();
+    @OneToMany(mappedBy = "serviceProvide", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ServiceReservation> bookings = new ArrayList<>();
 
-    public Service() {
+    public ServiceProvide() {
         super();
     }
 }

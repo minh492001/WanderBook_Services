@@ -27,7 +27,7 @@ public class Branch extends BaseEntity {
     @JoinTable(name = "branch_services",
             joinColumns = @JoinColumn(name = "branch_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "service_id", referencedColumnName = "id"))
-    private Collection<Service> services = new HashSet<>();
+    private Collection<ServiceProvide> serviceProvides = new HashSet<>();
 
     public Branch(String branchName, String city, String address) {
         super();

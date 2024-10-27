@@ -81,16 +81,16 @@ public class Booking extends BaseEntity {
     }
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ReservationService> bookingServices = new ArrayList<>();
+    private List<ServiceReservation> bookingServices = new ArrayList<>();
 
     // Method to add service
-    public void addReservationService(Service service, int quantity) {
-        ReservationService bookingService = ReservationService.createBookingService(this, service, quantity);
+    public void addReservationService(ServiceProvide serviceProvide, int quantity) {
+        ServiceReservation bookingService = ServiceReservation.createBookingService(this, serviceProvide, quantity);
         bookingServices.add(bookingService);
     }
 
     // Method to remove service
-    public void removeReservationService(ReservationService bookingService) {
+    public void removeReservationService(ServiceReservation bookingService) {
         bookingServices.remove(bookingService);
         bookingService.setDeletedAt(System.currentTimeMillis());
     }

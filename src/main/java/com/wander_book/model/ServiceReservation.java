@@ -14,27 +14,27 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @Entity
-public class ReservationService extends BaseEntity {
+public class ServiceReservation extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "booking_id")
     private Booking booking;
 
     @ManyToOne
     @JoinColumn(name = "service_id")
-    private Service service;
+    private ServiceProvide serviceProvide;
 
     private int serviceQuantity;
     private BigDecimal price;
 
-    public ReservationService(Booking booking, Service service, int serviceQuantity, BigDecimal price) {
+    public ServiceReservation(Booking booking, ServiceProvide serviceProvide, int serviceQuantity, BigDecimal price) {
         this.booking = booking;
-        this.service = service;
+        this.serviceProvide = serviceProvide;
         this.serviceQuantity = serviceQuantity;
         this.price = price;
         this.setCreatedAt(System.currentTimeMillis());
     }
 
-    public static ReservationService createBookingService(Booking booking, Service service, int quantity) {
-        return new ReservationService(booking, service, quantity, service.getPrice().multiply(BigDecimal.valueOf(quantity)));
+    public static ServiceReservation createBookingService(Booking booking, ServiceProvide serviceProvide, int quantity) {
+        return new ServiceReservation(booking, serviceProvide, quantity, serviceProvide.getPrice().multiply(BigDecimal.valueOf(quantity)));
     }
 }
