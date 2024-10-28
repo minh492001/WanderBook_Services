@@ -3,8 +3,6 @@ package com.wander_book.response;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 public class JwtResponse {

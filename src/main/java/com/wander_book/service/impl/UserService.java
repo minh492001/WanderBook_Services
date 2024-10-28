@@ -8,7 +8,6 @@ import com.wander_book.request.auth.RegisterRequest;
 import com.wander_book.request.user.editUserRequest;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IUserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

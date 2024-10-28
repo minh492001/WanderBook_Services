@@ -4,7 +4,6 @@ import com.wander_book.model.User;
 import com.wander_book.repository.comon.BaseRepository;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 

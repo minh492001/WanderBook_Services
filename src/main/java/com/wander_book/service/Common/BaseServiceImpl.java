@@ -2,7 +2,6 @@ package com.wander_book.service.Common;
 
 import com.wander_book.model.comon.BaseEntity;
 import com.wander_book.repository.comon.BaseRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
