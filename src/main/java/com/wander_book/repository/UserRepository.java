@@ -1,41 +1,35 @@
 package com.wander_book.repository;
 
 import com.wander_book.model.User;
+import com.wander_book.repository.comon.BaseRepository;
 import jakarta.transaction.Transactional;
+import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
-    boolean existsByEmail(String email);
+public interface UserRepository extends BaseRepository<User> {
 
-    Optional<User> findByEmail(String email);
+    boolean existsByEmail(@NonNull String email);
 
-    default Optional<User> findById(Long id) {
-        return findByIdAndDeletedAtIsNull(id);
-    }
+    Optional<User> findByEmail(@NonNull String email);
+
     // Additional helper query to retrieve non-soft-deleted users by ID
-    Optional<User> findByIdAndDeletedAtIsNull(Long id);
+    Optional<User> findByIdAndDeletedAtIsNull(@NonNull Long id);
 
     @Transactional
-    default void deleteByEmail(String email) {
-        findByEmail(email).ifPresent(user -> {
-            user.setDeletedAt(System.currentTimeMillis());
-            save(user);
-        });
+    default void deleteByEmail(@NonNull String email) {
+        findByEmail(email).ifPresent(this::softDelete);
     }
 
     // Override deleteById for soft delete by setting the deletedAt timestamp
 
     @Transactional
-    default void deleteById(Long id) {
-        findByIdAndDeletedAtIsNull(id).ifPresent(user -> {
-            user.setDeletedAt(System.currentTimeMillis());
-            save(user);
-        });
+    default void deleteById(@NonNull Long id) {
+        findByIdAndDeletedAtIsNull(id).ifPresent(this::softDelete);
     }
 
-    long countByDateOfBirthLessThan(Long timestamp);
+    long countByDateOfBirthLessThan(@NonNull Long timestamp);
 
     // Helper method to count users by age
     default long countByAge(int age) {

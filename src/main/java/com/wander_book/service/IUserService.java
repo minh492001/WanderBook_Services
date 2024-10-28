@@ -1,20 +1,18 @@
 package com.wander_book.service;
 
 import com.wander_book.model.User;
-import com.wander_book.request.RegisterRequest;
+import com.wander_book.request.auth.RegisterRequest;
+import com.wander_book.request.user.editUserRequest;
+import com.wander_book.service.Common.IBaseService;
 
-import java.util.List;
 import java.util.Optional;
 
-public interface IUserService {
+public interface IUserService extends IBaseService<User> {
     // Register a new user
-    User registerUser(RegisterRequest registerRequest);
+    void registerUser(RegisterRequest registerRequest);
 
     // Find user by email
     Optional<User> findByEmail(String email);
-
-    // Find user by ID
-    Optional<User> findById(Long id);
 
     // Soft delete user by email
     void deleteByEmail(String email);
@@ -22,9 +20,9 @@ public interface IUserService {
     // Soft delete user by ID
     void deleteById(Long id);
 
+    User updateUser(Long id, editUserRequest updatedUser);
+
     // Count users by age
     long countUsersByAge(int age);
 
-    // Get all users
-    List<User> getAllUsers();
 }

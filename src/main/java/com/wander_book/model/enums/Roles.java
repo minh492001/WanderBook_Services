@@ -1,6 +1,13 @@
 package com.wander_book.model.enums;
 
-public enum Roles {
+import org.springframework.security.core.GrantedAuthority;
+
+public enum Roles implements GrantedAuthority {
     ADMIN,
-    USER
+    USER;
+
+    @Override
+    public String getAuthority() {
+        return this.name();
+    }
 }

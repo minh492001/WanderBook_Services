@@ -1,4 +1,4 @@
-package com.wander_book.request;
+package com.wander_book.request.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

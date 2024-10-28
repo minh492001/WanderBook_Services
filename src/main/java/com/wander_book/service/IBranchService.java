@@ -2,11 +2,12 @@ package com.wander_book.service;
 
 import com.wander_book.model.Branch;
 import com.wander_book.model.ServiceProvide;
+import com.wander_book.service.Common.IBaseService;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface IBranchService {
+public interface IBranchService extends IBaseService<Branch> {
     Optional<Branch> findByName(String branchName);
 
     boolean existsByName(String branchName);

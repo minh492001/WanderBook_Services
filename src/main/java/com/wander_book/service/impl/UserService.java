@@ -1,56 +1,55 @@
 package com.wander_book.service.impl;
 
-import com.wander_book.exception.UserAlreadyExistsException;
+import com.wander_book.exception.auth.UserAlreadyExistsException;
 import com.wander_book.model.User;
 import com.wander_book.model.enums.Roles;
 import com.wander_book.repository.UserRepository;
-import com.wander_book.request.RegisterRequest;
+import com.wander_book.request.auth.RegisterRequest;
+import com.wander_book.request.user.editUserRequest;
+import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IUserService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-public class UserService implements IUserService {
+public class UserService extends BaseServiceImpl<User> implements IUserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.repository = userRepository;  // Initialize the inherited repository field
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @Override
-    public User registerUser(RegisterRequest registerRequest) throws UserAlreadyExistsException {
+    public void registerUser(RegisterRequest registerRequest) throws UserAlreadyExistsException {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new UserAlreadyExistsException(registerRequest.getEmail() + " already exists");
         }
-
         // Create a new user entity
         User newUser = new User(
                 registerRequest.getFullName(),
                 registerRequest.getEmail(),
                 passwordEncoder.encode(registerRequest.getPassword()),
                 registerRequest.getAddress(),
+                registerRequest.getPhoneNo(),
                 registerRequest.getDateOfBirth(),
                 Roles.USER
         );
-        return userRepository.save(newUser);
+        userRepository.save(newUser);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
         // Find a user by email
         return userRepository.findByEmail(email);
-    }
-
-    @Override
-    public Optional<User> findById(Long id) {
-        // Find a user by ID
-        return userRepository.findById(id);
     }
 
     @Override
@@ -72,17 +71,26 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public User updateUser(Long id, editUserRequest updatedUser) {
+        return userRepository.findByIdAndDeletedAtIsNull(id).map(existingUser -> {
+            if (updatedUser.getFullName() != null) existingUser.setFullName(updatedUser.getFullName());
+            if (updatedUser.getEmail() != null) existingUser.setEmail(updatedUser.getEmail());
+            if (updatedUser.getAddress() != null) existingUser.setAddress(updatedUser.getAddress());
+            if (updatedUser.getPhoneNo() != null) existingUser.setPhoneNo(updatedUser.getPhoneNo());
+            if (updatedUser.getDateOfBirth() != null) existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
+            if (updatedUser.getPassword() != null)
+                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // Encode the new password
+            existingUser.onUpdate(); // Set updated timestamp
+            return userRepository.save(existingUser);
+        }).orElseThrow(() -> new IllegalArgumentException("User not found or has been deleted"));
+    }
+
+    @Override
     public long countUsersByAge(int age) {
         // Count users by age (assuming age is calculated based on dateOfBirth)
         long currentTime = System.currentTimeMillis();
         long ageInMillis = age * 365L * 24 * 60 * 60 * 1000;
         long ageThreshold = currentTime - ageInMillis;
         return userRepository.countByDateOfBirthLessThan(ageThreshold);
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        // Return all users in the system
-        return userRepository.findAll();
     }
 }

@@ -16,6 +16,7 @@ public class User extends BaseEntity {
     private String email;
     private String password;
     private String address;
+    private String phoneNo;
     private Long dateOfBirth; // (UNIX timestamp)
 
     @Enumerated(EnumType.STRING)
@@ -25,12 +26,20 @@ public class User extends BaseEntity {
         super();
     }
 
-    public User(String fullName, String email, String password, String address, Long dateOfBirth, Roles role) {
+    public User(
+            String fullName,
+            String email,
+            String password,
+            String address,
+            String phoneNo,
+            Long dateOfBirth,
+            Roles role) {
         super();
         this.fullName = fullName;
         this.email = email;
         this.password = password;
         this.address = address;
+        this.phoneNo = phoneNo;
         this.dateOfBirth = dateOfBirth;
         this.role = role;
     }

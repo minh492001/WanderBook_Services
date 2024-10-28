@@ -1,9 +1,9 @@
 package com.wander_book.controller;
 
-import com.wander_book.exception.UserAlreadyExistsException;
-import com.wander_book.model.User;
-import com.wander_book.request.LoginRequest;
-import com.wander_book.request.RegisterRequest;
+import com.wander_book.exception.auth.UserAlreadyExistsException;
+import com.wander_book.exception.user.PasswordMismatchException;
+import com.wander_book.request.auth.LoginRequest;
+import com.wander_book.request.auth.RegisterRequest;
 import com.wander_book.response.JwtResponse;
 import com.wander_book.security.jwt.JwtUtils;
 import com.wander_book.security.user.HotelUserDetails;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/v2/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final IUserService userService;
@@ -31,6 +31,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest ) {
+        if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
+            throw new PasswordMismatchException("Password and Confirm Password do not match");
+        }
         try {
             userService.registerUser(registerRequest);
             return ResponseEntity.ok("Registration successful !");
