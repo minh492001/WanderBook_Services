@@ -1,7 +1,7 @@
 package com.wander_book.service;
 
 import com.wander_book.model.Branch;
-import com.wander_book.model.ServiceProvide;
+import com.wander_book.model.serviceProvide.ServiceProvide;
 import com.wander_book.service.Common.IBaseService;
 
 import java.util.List;

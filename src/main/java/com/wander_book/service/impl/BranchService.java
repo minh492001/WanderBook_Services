@@ -1,7 +1,7 @@
 package com.wander_book.service.impl;
 
 import com.wander_book.model.Branch;
-import com.wander_book.model.ServiceProvide;
+import com.wander_book.model.serviceProvide.ServiceProvide;
 import com.wander_book.repository.BranchRepository;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IBranchService;

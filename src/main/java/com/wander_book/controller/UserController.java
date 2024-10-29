@@ -1,6 +1,7 @@
 package com.wander_book.controller;
 
-import com.wander_book.model.User;
+import com.wander_book.model.user.User;
+import com.wander_book.request.user.editUserRequest;
 import com.wander_book.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -63,17 +64,29 @@ public class UserController {
         return ResponseEntity.ok("User soft deleted by id successfully.");
     }
 
-    @DeleteMapping("/by-email")
+    @DeleteMapping("/email/{email}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<String> softDeleteUserByEmail(@RequestParam String email) {
+    public ResponseEntity<String> softDeleteUserByEmail(@PathVariable("email") String email) {
         userService.deleteByEmail(email);
         return ResponseEntity.ok("User soft deleted successfully by email.");
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @GetMapping("/count-by-age")
-    public ResponseEntity<Long> countUsersByAge(@RequestParam int age) {
-        long count = userService.countUsersByAge(age);
-        return ResponseEntity.ok(count);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody editUserRequest updatedUser) {
+        try {
+            User updated = userService.updateUser(id, updatedUser);
+            return ResponseEntity.ok(updated);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred while updating the user");
+        }
     }
+
+//    @GetMapping("/count-by-age")
+//    @PreAuthorize("hasAuthority('ADMIN')")
+//    public ResponseEntity<Long> countUsersByAge(@RequestParam int age) {
+//        long count = userService.countUsersByAge(age);
+//        return ResponseEntity.ok(count);
+//    }
 }

@@ -2,6 +2,7 @@ package com.wander_book.model;
 
 
 import com.wander_book.model.comon.BaseEntity;
+import com.wander_book.model.serviceProvide.ServiceProvide;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

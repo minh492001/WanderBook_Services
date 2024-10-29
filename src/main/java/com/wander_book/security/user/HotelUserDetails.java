@@ -1,7 +1,7 @@
 package com.wander_book.security.user;
 
-import com.wander_book.model.User;
-import com.wander_book.model.enums.Roles;
+import com.wander_book.model.user.User;
+import com.wander_book.model.user.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter

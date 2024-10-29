@@ -1,7 +1,6 @@
-package com.wander_book.model;
+package com.wander_book.model.user;
 
 import com.wander_book.model.comon.BaseEntity;
-import com.wander_book.model.enums.Roles;
 import jakarta.persistence.*;
 import lombok.*;
 

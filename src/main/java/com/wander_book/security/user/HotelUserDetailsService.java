@@ -1,6 +1,6 @@
 package com.wander_book.security.user;
 
-import com.wander_book.model.User;
+import com.wander_book.model.user.User;
 import com.wander_book.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

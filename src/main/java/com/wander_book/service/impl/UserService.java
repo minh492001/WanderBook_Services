@@ -1,8 +1,8 @@
 package com.wander_book.service.impl;
 
 import com.wander_book.exception.auth.UserAlreadyExistsException;
-import com.wander_book.model.User;
-import com.wander_book.model.enums.Roles;
+import com.wander_book.model.user.User;
+import com.wander_book.model.user.Roles;
 import com.wander_book.repository.UserRepository;
 import com.wander_book.request.auth.RegisterRequest;
 import com.wander_book.request.user.editUserRequest;
@@ -84,12 +84,12 @@ public class UserService extends BaseServiceImpl<User> implements IUserService {
         }).orElseThrow(() -> new IllegalArgumentException("User not found or has been deleted"));
     }
 
-    @Override
-    public long countUsersByAge(int age) {
-        // Count users by age (assuming age is calculated based on dateOfBirth)
-        long currentTime = System.currentTimeMillis();
-        long ageInMillis = age * 365L * 24 * 60 * 60 * 1000;
-        long ageThreshold = currentTime - ageInMillis;
-        return userRepository.countByDateOfBirthLessThan(ageThreshold);
-    }
+//    @Override
+//    public long countUsersByAge(int age) {
+//        // Count users by age (assuming age is calculated based on dateOfBirth)
+//        long currentTime = System.currentTimeMillis();
+//        long ageInMillis = age * 365L * 24 * 60 * 60 * 1000;
+//        long ageThreshold = currentTime - ageInMillis;
+//        return userRepository.countByDateOfBirthLessThan(ageThreshold);
+//    }
 }

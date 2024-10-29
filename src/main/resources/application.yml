@@ -10,7 +10,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/grand_lusso_hotel
     username: postgres
     password: admin@123
-# ===============================
+  main:
+    banner-mode: "off"
+  # ===============================
 # JPA / HIBERNATE
 # ===============================
   jpa:
@@ -33,6 +35,7 @@ logging:
 #    org.springframework.security: TRACE
     org.springframework.security: DEBUG
     com.wander_book.security: DEBUG
+    root: warn           # Sets the default logging level to WARN (only warnings and errors will be shown)
     org:
       hibernate:
         SQL: DEBUG

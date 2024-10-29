@@ -1,6 +1,7 @@
 package com.wander_book.model;
 
 import com.wander_book.model.comon.BaseEntity;
+import com.wander_book.model.serviceProvide.ServiceProvide;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;

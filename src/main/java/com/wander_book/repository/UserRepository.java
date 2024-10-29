@@ -1,6 +1,6 @@
 package com.wander_book.repository;
 
-import com.wander_book.model.User;
+import com.wander_book.model.user.User;
 import com.wander_book.repository.comon.BaseRepository;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;

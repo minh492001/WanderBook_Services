@@ -1,6 +1,8 @@
 package com.wander_book.model;
 
 import com.wander_book.model.comon.BaseEntity;
+import com.wander_book.model.serviceProvide.ServiceProvide;
+import com.wander_book.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.apache.commons.lang3.RandomStringUtils;
