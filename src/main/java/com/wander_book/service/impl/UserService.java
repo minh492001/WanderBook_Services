@@ -54,19 +54,13 @@ public class UserService extends BaseServiceImpl<User> implements IUserService {
     @Override
     public void deleteByEmail(String email) {
         // Soft delete a user by email
-        userRepository.findByEmail(email).ifPresent(user -> {
-            user.onDelete();
-            userRepository.save(user);
-        });
+        userRepository.findByEmail(email).ifPresent(userRepository::softDelete);
     }
 
     @Override
     public void deleteById(Long id) {
         // Soft delete a user by ID
-        userRepository.findById(id).ifPresent(user -> {
-            user.onDelete();
-            userRepository.save(user);
-        });
+        userRepository.findById(id).ifPresent(userRepository::softDelete);
     }
 
     @Override
@@ -79,7 +73,6 @@ public class UserService extends BaseServiceImpl<User> implements IUserService {
             if (updatedUser.getDateOfBirth() != null) existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
             if (updatedUser.getPassword() != null)
                 existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // Encode the new password
-            existingUser.onUpdate(); // Set updated timestamp
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new IllegalArgumentException("User not found or has been deleted"));
     }

@@ -1,19 +1,17 @@
 package com.wander_book.repository;
 
-import com.wander_book.model.Room;
-import com.wander_book.model.enums.RoomState;
-import com.wander_book.model.enums.RoomType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import com.wander_book.model.room.Room;
+import com.wander_book.model.room.RoomState;
+import com.wander_book.model.room.RoomType;
+import com.wander_book.repository.comon.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RoomRepository extends JpaRepository<Room, Long> {
+public interface RoomRepository extends BaseRepository<Room> {
 
     // Find room by room number
     Optional<Room> findByRoomNumber(String roomNumber);
@@ -22,7 +20,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     List<Room> findByState(RoomState state);
 
     // Find all rooms by branch id
-    List<Room> findByBranch_Id(Long branchId);
+    List<Room> findByBranchId(Long branchId);
 
     // Find all rooms by branch id and state
     List<Room> findByBranch_IdAndState(Long branchId, RoomState state);

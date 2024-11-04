@@ -1,8 +1,10 @@
 package com.wander_book.model;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wander_book.model.comon.BaseEntity;
-import com.wander_book.model.serviceProvide.ServiceProvide;
+import com.wander_book.model.room.Room;
+import com.wander_book.model.service_provide.ServiceProvide;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,10 @@ public class Branch extends BaseEntity {
             joinColumns = @JoinColumn(name = "branch_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "service_id", referencedColumnName = "id"))
     private Collection<ServiceProvide> serviceProvides = new HashSet<>();
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Collection<Room> rooms;
 
     public Branch(String branchName, String city, String address) {
         super();

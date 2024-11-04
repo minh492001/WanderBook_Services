@@ -1,6 +1,5 @@
-package com.wander_book.model.serviceProvide;
+package com.wander_book.model.service_provide;
 
-import com.wander_book.model.ServiceReservation;
 import com.wander_book.model.comon.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;

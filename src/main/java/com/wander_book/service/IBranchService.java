@@ -1,7 +1,7 @@
 package com.wander_book.service;
 
 import com.wander_book.model.Branch;
-import com.wander_book.model.serviceProvide.ServiceProvide;
+import com.wander_book.model.room.Room;
 import com.wander_book.service.Common.IBaseService;
 
 import java.util.List;
@@ -12,11 +12,13 @@ public interface IBranchService extends IBaseService<Branch> {
 
     boolean existsByName(String branchName);
 
-    List<ServiceProvide> getAllServicesOfBranch(Long branchId);
-
-    void addServiceToBranch(Long branchId, ServiceProvide service);
-
-    void removeServiceFromBranch(Long branchId, ServiceProvide service);
-
     List<Branch> findByCity(String city);
+
+    List<Room> getRoomsByBranchId(Long branchId);
+
+    void deleteBranchById(Long id);
+
+    void addServiceToBranch(Long branchId, Long serviceId);
+
+    void removeServiceFromBranch(Long branchId, Long serviceId);
 }

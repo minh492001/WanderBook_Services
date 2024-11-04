@@ -1,7 +1,7 @@
 package com.wander_book.controller;
 
 
-import com.wander_book.model.serviceProvide.ServiceProvide;
+import com.wander_book.model.service_provide.ServiceProvide;
 import com.wander_book.request.service.SimpleService;
 import com.wander_book.service.IServiceProvideService;
 import lombok.RequiredArgsConstructor;

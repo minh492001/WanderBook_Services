@@ -1,6 +1,6 @@
 package com.wander_book.repository;
 
-import com.wander_book.model.serviceProvide.ServiceProvide;
+import com.wander_book.model.service_provide.ServiceProvide;
 import com.wander_book.repository.comon.BaseRepository;
 import lombok.NonNull;
 

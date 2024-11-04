@@ -10,4 +10,5 @@ public interface BranchRepository extends BaseRepository<Branch> {
     Optional<Branch> findByBranchName(String branchName);
     boolean existsByBranchName(String branchName);
     List<Branch> findByCity(String city);
+    List<Branch> findByServiceProvidesId(Long serviceId);
 }

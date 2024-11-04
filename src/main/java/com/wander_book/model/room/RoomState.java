@@ -1,4 +1,4 @@
-package com.wander_book.model.enums;
+package com.wander_book.model.room;
 
 public enum RoomState {
     OPEN,

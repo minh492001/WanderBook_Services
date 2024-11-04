@@ -1,97 +1,123 @@
-//package com.wander_book.service.impl;
-//
-//import com.wander_book.exception.InternalServerException;
-//import com.wander_book.exception.ResourceNotFoundException;
-//import com.wander_book.model.Room;
-//import com.wander_book.repository.RoomRepository;
-//import com.wander_book.service.IRoomService;
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.stereotype.Service;
-//import org.springframework.web.multipart.MultipartFile;
-//
-//import javax.sql.rowset.serial.SerialBlob;
-//import java.io.IOException;
-//import java.math.BigDecimal;
-//import java.sql.Blob;
-//import java.sql.SQLException;
-//import java.time.LocalDate;
-//import java.util.List;
-//import java.util.Optional;
-//
-//@Service
-//@RequiredArgsConstructor
-//public class RoomService implements IRoomService {
-//    private final RoomRepository roomRepository;
-//
-//    @Override
-//    public Room addNewRoom(MultipartFile file, String roomType, BigDecimal roomPrice) throws SQLException, IOException {
-//        Room room = new Room();
-//        room.setRoomType(roomType);
-//        room.setRoomPrice(roomPrice);
-//        if (!file.isEmpty()) {
-//            byte[] photoBytes = file.getBytes();
-//            Blob photoBlob = new SerialBlob(photoBytes);
-//            room.setPhoto(photoBlob);
-//        }
-//        return roomRepository.save(room);
-//    }
-//
-//    @Override
-//    public List<String> getAllRoomTypes() {
-//        return roomRepository.findDistinctRoomTypes();
-//    }
-//
-//    @Override
-//    public List<Room> getAllRooms() {
-//        return roomRepository.findAll();
-//    }
-//
-//    @Override
-//    public byte[] getRoomPhotoByRoomId(Long roomId) throws SQLException {
-//        Optional<Room> theRoom = roomRepository.findById(roomId);
-//        if(theRoom.isEmpty()){
-//            throw new ResourceNotFoundException("Sorry, Room not found !");
-//        }
-//        Blob photoBlob = theRoom.get().getPhoto();
-//        if (photoBlob != null) {
-//            return photoBlob.getBytes(1, (int) photoBlob.length());
-//        }
-//        return null;
-//    }
-//
-//    @Override
-//    public void deleteRoom(Long roomId) {
-//        Optional<Room> theRoom = roomRepository.findById(roomId);
-//        if(theRoom.isPresent()){
-//            roomRepository.deleteById(roomId);
-//        }
-//    }
-//
-//    @Override
-//    public Room updateRoom(Long roomId, String roomType, BigDecimal roomPrice, byte[] photoBytes) {
-//        Room room = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Sorry, Room not found !"));
-//        if (roomType != null) room.setRoomType(roomType);
-//
-//        if (roomPrice != null) room.setPricePerNight(roomPrice);
-//
-//        if (photoBytes != null && photoBytes.length > 0) {
-//            try {
-//                room.setPhoto(new SerialBlob(photoBytes));
-//            }
-//            catch (SQLException ex) {
-//                throw new InternalServerException("Error updating room !");
-//            }
-//        }
-//        return roomRepository.save(room);
-//    }
-//
-//    @Override
-//    public Optional<Room> getRoomById(Long roomId) {
-//        return Optional.of(roomRepository.findById(roomId).get());
-//    }
-//
-//    @Override
-//    public List<Room> getAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, String roomType) {
-//        return roomRepository.findAvailableRoomsByDatesAndType(checkInDate, checkOutDate, roomType);
-//    }
-//}
+package com.wander_book.service.impl;
+
+import com.wander_book.model.Branch;
+import com.wander_book.model.room.Room;
+import com.wander_book.model.room.RoomState;
+import com.wander_book.model.room.RoomType;
+import com.wander_book.repository.RoomRepository;
+import com.wander_book.request.room.AddNewRoomRequest;
+import com.wander_book.request.room.RoomUpdateRequest;
+import com.wander_book.service.Common.BaseServiceImpl;
+import com.wander_book.service.IBranchService;
+import com.wander_book.service.IRoomService;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
+
+    private final RoomRepository roomRepository;
+    private final IBranchService branchService;
+
+    @Autowired
+    public RoomService(RoomRepository roomRepository, IBranchService branchService) {
+        this.repository = roomRepository;
+        this.roomRepository = roomRepository;
+        this.branchService = branchService;
+    }
+
+    @Override
+    public Optional<Room> findByRoomNumber(String roomNumber) {
+        return roomRepository.findByRoomNumber(roomNumber);
+    }
+
+    @Override
+    public List<Room> findByState(RoomState state) {
+        return roomRepository.findByState(state);
+    }
+
+    @Override
+    public List<Room> findByBranchId(Long branchId) {
+        return roomRepository.findByBranchId(branchId);
+    }
+
+    @Override
+    public List<Room> findByBranchIdAndState(Long branchId, RoomState state) {
+        return roomRepository.findByBranch_IdAndState(branchId, state);
+    }
+
+    @Override
+    public List<Room> findByRoomTypeAndPricePerNightBetween(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
+        return roomRepository.findByRoomTypeAndPricePerNightBetween(roomType, minPrice, maxPrice);
+    }
+
+    @Override
+    public List<Room> findByBranchIdAndRoomTypeAndPricePerNightBetween(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
+        return roomRepository.findByBranch_IdAndRoomTypeAndPricePerNightBetween(branchId, roomType, minPrice, maxPrice);
+    }
+
+    @Override
+    public boolean existsByRoomNumber(String roomNumber) {
+        return roomRepository.existsByRoomNumber(roomNumber);
+    }
+
+    public Room addNewRoom(AddNewRoomRequest request) {
+        Branch branch = branchService.findById(request.getBranchId())
+                .orElseThrow(() -> new IllegalArgumentException("Branch not found with ID: " + request.getBranchId()));
+
+        Room room = new Room();
+        room.setBranch(branch);
+        room.setRoomNumber(request.getRoomNumber());
+        room.setRoomType(request.getRoomType());
+        room.setPricePerNight(request.getPricePerNight());
+        room.setMaxOccupancy(request.getMaxOccupancy());
+        room.setState(RoomState.OPEN); // Set default state to OPEN
+
+        // Only set description and photo if they are not null
+        if (request.getDescription() != null) {
+            room.setDescription(request.getDescription());
+        }
+        if (request.getPhoto() != null) {
+            room.setPhoto(request.getPhoto());
+        }
+
+        return roomRepository.save(room);
+    }
+
+    @Override
+    @Transactional
+    public Room updateRoom(Long roomId, RoomUpdateRequest roomUpdateRequest) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found with ID: " + roomId));
+
+        // Update only non-null fields from the request
+        if (roomUpdateRequest.getRoomNumber() != null) {
+            room.setRoomNumber(roomUpdateRequest.getRoomNumber());
+        }
+        if (roomUpdateRequest.getRoomType() != null) {
+            room.setRoomType(roomUpdateRequest.getRoomType());
+        }
+        if (roomUpdateRequest.getPricePerNight() != null) {
+            room.setPricePerNight(roomUpdateRequest.getPricePerNight());
+        }
+        if (roomUpdateRequest.getMaxOccupancy() != null) {
+            room.setMaxOccupancy(roomUpdateRequest.getMaxOccupancy());
+        }
+        if (roomUpdateRequest.getDescription() != null) {
+            room.setDescription(roomUpdateRequest.getDescription());
+        }
+        if (roomUpdateRequest.getState() != null) {
+            room.setState(roomUpdateRequest.getState());
+        }
+        if (roomUpdateRequest.getPhoto() != null) {
+            room.setPhoto(roomUpdateRequest.getPhoto());
+        }
+        return roomRepository.save(room);
+    }
+
+}

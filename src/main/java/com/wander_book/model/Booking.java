@@ -1,7 +1,9 @@
 package com.wander_book.model;
 
 import com.wander_book.model.comon.BaseEntity;
-import com.wander_book.model.serviceProvide.ServiceProvide;
+import com.wander_book.model.room.Room;
+import com.wander_book.model.service_provide.ServiceProvide;
+import com.wander_book.model.service_provide.ServiceReservation;
 import com.wander_book.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;

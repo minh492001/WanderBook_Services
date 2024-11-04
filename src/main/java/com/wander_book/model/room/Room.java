@@ -1,16 +1,14 @@
-package com.wander_book.model;
+package com.wander_book.model.room;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.wander_book.model.Branch;
 import com.wander_book.model.comon.BaseEntity;
-import com.wander_book.model.enums.RoomState;
-import com.wander_book.model.enums.RoomType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.apache.commons.lang3.RandomStringUtils;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Entity
 @Getter
@@ -18,6 +16,7 @@ import java.util.List;
 @Table(name = "rooms")
 public class Room extends BaseEntity {
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;

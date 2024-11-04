@@ -1,6 +1,6 @@
 package com.wander_book.response;
 
-import com.wander_book.model.enums.RoomType;
+import com.wander_book.model.room.RoomType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;

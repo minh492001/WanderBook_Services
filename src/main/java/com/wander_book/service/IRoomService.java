@@ -1,30 +1,33 @@
 package com.wander_book.service;
 
-import com.wander_book.model.Room;
-import org.springframework.web.multipart.MultipartFile;
+import com.wander_book.model.room.Room;
+import com.wander_book.model.room.RoomState;
+import com.wander_book.model.room.RoomType;
+import com.wander_book.request.room.AddNewRoomRequest;
+import com.wander_book.request.room.RoomUpdateRequest;
+import com.wander_book.service.Common.IBaseService;
 
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface IRoomService {
-    Room addNewRoom(MultipartFile photo, String roomType, BigDecimal roomPrice) throws SQLException, IOException;
+public interface IRoomService extends IBaseService<Room> {
 
-    List<String> getAllRoomTypes();
+    Optional<Room> findByRoomNumber(String roomNumber);
 
-    List<Room> getAllRooms();
+    List<Room> findByState(RoomState state);
 
-    byte[] getRoomPhotoByRoomId(Long roomId) throws SQLException;
+    List<Room> findByBranchId(Long branchId);
 
-    void deleteRoom(Long roomId);
+    List<Room> findByBranchIdAndState(Long branchId, RoomState state);
 
-    Room updateRoom(Long roomId, String roomType, BigDecimal roomPrice, byte[] photoBytes);
+    List<Room> findByRoomTypeAndPricePerNightBetween(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice);
 
-    Optional<Room> getRoomById(Long roomId);
+    List<Room> findByBranchIdAndRoomTypeAndPricePerNightBetween(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice);
 
-    List<Room> getAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, String roomType);
+    boolean existsByRoomNumber(String roomNumber);
 
+    public Room addNewRoom(AddNewRoomRequest request);
+
+    public Room updateRoom(Long roomId, RoomUpdateRequest roomUpdateRequest);
 }

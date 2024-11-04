@@ -2,7 +2,7 @@
 //
 //import com.wander_book.exception.InvalidBookingRequestException;
 //import com.wander_book.exception.ResourceNotFoundException;
-//import com.wander_book.model.Room;
+//import com.wander_book.model.room.Room;
 //import com.wander_book.repository.BookingRepository;
 //import com.wander_book.service.IBookingService;
 //import com.wander_book.service.IRoomService;

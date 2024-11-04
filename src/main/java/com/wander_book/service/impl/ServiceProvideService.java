@@ -1,6 +1,6 @@
 package com.wander_book.service.impl;
 
-import com.wander_book.model.serviceProvide.ServiceProvide;
+import com.wander_book.model.service_provide.ServiceProvide;
 import com.wander_book.repository.ServiceProvideRepository;
 import com.wander_book.request.service.SimpleService;
 import com.wander_book.service.Common.BaseServiceImpl;
@@ -53,16 +53,12 @@ public class ServiceProvideService extends BaseServiceImpl<ServiceProvide> imple
             if (updateService.getServiceName() != null) existingService.setServiceName(updateService.getServiceName());
             if (updateService.getDescription() != null) existingService.setDescription(updateService.getDescription());
             if (updateService.getPrice() != null) existingService.setPrice(updateService.getPrice());
-            existingService.onUpdate();
             return serviceProvideRepository.save(existingService);
         }).orElseThrow(() -> new IllegalArgumentException("Service not found or has been deleted"));
     }
 
     @Override
     public void deleteById(Long id) {
-        serviceProvideRepository.findById(id).ifPresent(serviceProvide -> {
-            serviceProvide.onDelete();
-            serviceProvideRepository.save(serviceProvide);
-        });
+        serviceProvideRepository.findById(id).ifPresent(serviceProvideRepository::softDelete);
     }
 }
