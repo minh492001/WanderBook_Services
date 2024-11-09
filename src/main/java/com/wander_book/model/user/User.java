@@ -1,5 +1,6 @@
 package com.wander_book.model.user;
 
+import com.wander_book.model.auth.ForgotPassword;
 import com.wander_book.model.comon.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,6 +18,9 @@ public class User extends BaseEntity {
     private String address;
     private String phoneNo;
     private Long dateOfBirth; // (UNIX timestamp)
+
+    @OneToOne(mappedBy = "user")
+    private ForgotPassword forgotPassword;
 
     @Enumerated(EnumType.STRING)
     private Roles role;

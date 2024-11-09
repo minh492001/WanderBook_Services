@@ -27,7 +27,7 @@ public interface IRoomService extends IBaseService<Room> {
 
     boolean existsByRoomNumber(String roomNumber);
 
-    public Room addNewRoom(AddNewRoomRequest request);
+    Room addNewRoom(AddNewRoomRequest request);
 
-    public Room updateRoom(Long roomId, RoomUpdateRequest roomUpdateRequest);
+    Room updateRoom(Long roomId, RoomUpdateRequest roomUpdateRequest);
 }

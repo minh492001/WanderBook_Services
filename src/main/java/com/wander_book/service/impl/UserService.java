@@ -1,16 +1,20 @@
 package com.wander_book.service.impl;
 
 import com.wander_book.exception.auth.UserAlreadyExistsException;
+import com.wander_book.exception.user.PasswordMismatchException;
 import com.wander_book.model.user.User;
 import com.wander_book.model.user.Roles;
 import com.wander_book.repository.UserRepository;
 import com.wander_book.request.auth.RegisterRequest;
+import com.wander_book.request.auth.ResetPasswordRequest;
 import com.wander_book.request.user.editUserRequest;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -76,7 +80,18 @@ public class UserService extends BaseServiceImpl<User> implements IUserService {
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new IllegalArgumentException("User not found or has been deleted"));
     }
+    @Override
+    public User resetPassword(Long id, ResetPasswordRequest resetPasswordRequest) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with ID: " + id));
 
+        if (!resetPasswordRequest.newPassword().equals(resetPasswordRequest.confirmPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "New password and confirm password do not match");
+        }
+
+        existingUser.setPassword(passwordEncoder.encode(resetPasswordRequest.newPassword()));
+        return userRepository.save(existingUser);
+    }
 //    @Override
 //    public long countUsersByAge(int age) {
 //        // Count users by age (assuming age is calculated based on dateOfBirth)

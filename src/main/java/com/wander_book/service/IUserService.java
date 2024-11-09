@@ -2,6 +2,7 @@ package com.wander_book.service;
 
 import com.wander_book.model.user.User;
 import com.wander_book.request.auth.RegisterRequest;
+import com.wander_book.request.auth.ResetPasswordRequest;
 import com.wander_book.request.user.editUserRequest;
 import com.wander_book.service.Common.IBaseService;
 
@@ -22,6 +23,7 @@ public interface IUserService extends IBaseService<User> {
 
     User updateUser(Long id, editUserRequest updatedUser);
 
+    User resetPassword(Long id, ResetPasswordRequest resetPasswordRequest);
     // Count users by age
 //    long countUsersByAge(int age);
 

@@ -1,6 +1,7 @@
 package com.wander_book.controller;
 
 import com.wander_book.model.user.User;
+import com.wander_book.request.auth.ResetPasswordRequest;
 import com.wander_book.request.user.editUserRequest;
 import com.wander_book.service.IUserService;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +83,16 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("An error occurred while updating the user");
         }
+    }
+
+    @PutMapping("/changePassword/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    public ResponseEntity<String> changePassword(@RequestBody ResetPasswordRequest changePassword,
+                                                 @PathVariable Long id) {
+        User existingUser = userService.findByIdAndNotDeleted(id).orElseThrow(() -> new RuntimeException("User not found, please check again with id: " + id));
+        userService.resetPassword(existingUser.getId(), changePassword);
+
+        return ResponseEntity.ok("Password changed successfully");
     }
 
 //    @GetMapping("/count-by-age")

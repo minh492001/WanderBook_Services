@@ -56,7 +56,7 @@ public class WebSecurityConfig {
                         exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v2/auth/**", "/api/v2/rooms/**")
+                        .requestMatchers("/api/v2/auth/**", "/api/v2/forgot-password/**")
                         .permitAll()
 //                        .requestMatchers("/api/v2/role/**").hasRole("ADMIN")
                         .anyRequest().authenticated());

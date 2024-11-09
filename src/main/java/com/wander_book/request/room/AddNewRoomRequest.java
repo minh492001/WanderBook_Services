@@ -1,7 +1,6 @@
 package com.wander_book.request.room;
 
 import com.wander_book.model.room.RoomType;
-import jakarta.persistence.Lob;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 

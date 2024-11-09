@@ -13,8 +13,8 @@ spring:
   main:
     banner-mode: "off"
   # ===============================
-# JPA / HIBERNATE
-# ===============================
+  # JPA / HIBERNATE
+  # ===============================
   jpa:
     properties:
       hibernate:
@@ -29,6 +29,17 @@ spring:
     multipart:
       max-file-size: 500KB
       max-request-size: 500KB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: "tu1den2vietlien0dau@gmail.com"
+    password: "oijm hrja qfjk axex"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 logging:
   level:
