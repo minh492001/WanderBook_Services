@@ -85,20 +85,25 @@ public class UserController {
         }
     }
 
-    @PutMapping("/changePassword/{id}")
+    @PutMapping("/changePassword/{email}")
     @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
     public ResponseEntity<String> changePassword(@RequestBody ResetPasswordRequest changePassword,
-                                                 @PathVariable Long id) {
-        User existingUser = userService.findByIdAndNotDeleted(id).orElseThrow(() -> new RuntimeException("User not found, please check again with id: " + id));
-        userService.resetPassword(existingUser.getId(), changePassword);
+                                                 @PathVariable String email) {
+        // Check if the user exists by email
+        Optional<User> verifyEmail = userService.findByEmail(email);
+        if (verifyEmail.isEmpty()) {
+            return new ResponseEntity<>("User doesn't exist or has been deleted!", HttpStatus.NOT_FOUND);
+        }
+
+        // Check if the user exists and is not deleted
+        Optional<User> existingUser = userService.findByIdAndNotDeleted(verifyEmail.get().getId());
+        if (existingUser.isEmpty()) {
+            return new ResponseEntity<>("User doesn't exist or has been deleted!", HttpStatus.NOT_FOUND);
+        }
+
+        // Reset password
+        userService.resetPassword(existingUser.get().getEmail(), changePassword);
 
         return ResponseEntity.ok("Password changed successfully");
     }
-
-//    @GetMapping("/count-by-age")
-//    @PreAuthorize("hasAuthority('ADMIN')")
-//    public ResponseEntity<Long> countUsersByAge(@RequestParam int age) {
-//        long count = userService.countUsersByAge(age);
-//        return ResponseEntity.ok(count);
-//    }
 }
