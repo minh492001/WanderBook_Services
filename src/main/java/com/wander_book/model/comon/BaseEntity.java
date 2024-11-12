@@ -25,7 +25,6 @@ public abstract class BaseEntity {
         this.createdAt = System.currentTimeMillis();
         // this.createdAt = Instant.now().toEpochMilli();
         // providing more consistent behavior when used in applications that handle time zones and other time-based operations
-        this.updatedAt = this.createdAt;
     }
 
     @PreUpdate
