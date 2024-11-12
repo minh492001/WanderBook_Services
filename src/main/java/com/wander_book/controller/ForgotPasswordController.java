@@ -43,7 +43,7 @@ public class ForgotPasswordController {
                 .build();
         ForgotPassword forgotPassword = ForgotPassword.builder()
                 .otp(otp)
-                .expiryDate(new Date(System.currentTimeMillis() + 70 * 1000))
+                .expiryDate(new Date(System.currentTimeMillis() + 700 * 1000)) // 70s
                 .user(user)
                 .build();
         emailService.sendVerificationCode(mailBody);
@@ -51,56 +51,33 @@ public class ForgotPasswordController {
         return ResponseEntity.ok("Email sent for verification: " + mailBody.toString());
     }
 
-//    @PostMapping("/verify-otp/{otp}/{email}")
-//    public ResponseEntity<String> verifyOTP(@PathVariable Integer otp, @PathVariable String email) {
-//        User user = userService.findByEmail(email).orElseThrow(() -> new RuntimeException("User Not Found, please provide valid email"));
-//        ForgotPassword forgotPassword = forgotPasswordRepository.findByOtpAndUser(otp, user).orElseThrow(() -> new RuntimeException("User Not Found, please provide valid otp"));
-//
-//        if (forgotPassword.getExpiryDate().before(Date.from(Instant.now()))) {
-//            forgotPasswordRepository.deleteById(forgotPassword.getId());
-//
-//            return new ResponseEntity<>("OTP has expired!", HttpStatus.EXPECTATION_FAILED);
-//        }
-//
-//        return ResponseEntity.ok("OTP verified");
-//    }
-//
-//    @PutMapping("/changePassword/{email}")
-//    public ResponseEntity<String> changePassword(@RequestBody ResetPasswordRequest changePassword,
-//                                                 @PathVariable String email) {
-//        User existingUser = userService.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found, please provide valid email"));
-//        userService.resetPassword(existingUser.getId(), changePassword);
-//
-//        return ResponseEntity.ok("Password changed successfully");
-//    }
-
     @PutMapping("/verify-and-change-password/{email}")
     public ResponseEntity<String> verifyAndChangePassword(@RequestBody ResetPasswordRequest changePassword,
                                                           @PathVariable String email,
                                                           @RequestParam Integer otp) {
-        // Kiểm tra xem người dùng có tồn tại không
+        // Verify user
         User user = userService.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User Not Found, please provide valid email"));
 
-        // Kiểm tra OTP và người dùng trong bảng ForgotPassword
+        // Verify OTP in forgotPassword table
         ForgotPassword forgotPassword = forgotPasswordRepository.findByOtpAndUser(otp, user)
                 .orElseThrow(() -> new RuntimeException("Invalid OTP or email. Please try again."));
 
-        // Kiểm tra xem OTP đã hết hạn chưa
+        // Verify OTP expiry
         if (forgotPassword.getExpiryDate().before(Date.from(Instant.now()))) {
             forgotPasswordRepository.deleteById(forgotPassword.getId());
             return new ResponseEntity<>("OTP has expired!", HttpStatus.EXPECTATION_FAILED);
         }
 
-        // Xác minh mật khẩu mới và xác nhận khớp
+        // Verify confirmation password
         if (!Objects.equals(changePassword.newPassword(), changePassword.confirmPassword())) {
             return new ResponseEntity<>("Password and Confirm Password do not match", HttpStatus.BAD_REQUEST);
         }
 
-        // Thay đổi mật khẩu nếu OTP hợp lệ
-        userService.resetPassword(user.getId(), changePassword);
+        // Change password
+        userService.resetPassword(user.getEmail(), changePassword);
 
-        // Xóa mã OTP sau khi hoàn thành để ngăn chặn việc sử dụng lại
+        // Delete OTP to prevent using OTP more than once
         forgotPasswordRepository.deleteById(forgotPassword.getId());
 
         return ResponseEntity.ok("OTP verified and password changed successfully");
