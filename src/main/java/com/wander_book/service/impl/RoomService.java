@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import static com.wander_book.service.Common.UpdateUtil.updateIfNotNull;
+
 @Service
 public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
 
@@ -70,13 +72,12 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
         Branch branch = branchService.findById(request.getBranchId())
                 .orElseThrow(() -> new IllegalArgumentException("Branch not found with ID: " + request.getBranchId()));
 
-        Room room = new Room();
-        room.setBranch(branch);
-        room.setRoomNumber(request.getRoomNumber());
-        room.setRoomType(request.getRoomType());
-        room.setPricePerNight(request.getPricePerNight());
-        room.setMaxOccupancy(request.getMaxOccupancy());
-        room.setState(RoomState.OPEN); // Set default state to OPEN
+        Room room = new Room(branch,
+                request.getRoomNumber(),
+                request.getRoomType(),
+                request.getPricePerNight(),
+                RoomState.OPEN,
+                request.getMaxOccupancy());
 
         // Only set description and photo if they are not null
         if (request.getDescription() != null) {
@@ -96,27 +97,14 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with ID: " + roomId));
 
         // Update only non-null fields from the request
-        if (roomUpdateRequest.getRoomNumber() != null) {
-            room.setRoomNumber(roomUpdateRequest.getRoomNumber());
-        }
-        if (roomUpdateRequest.getRoomType() != null) {
-            room.setRoomType(roomUpdateRequest.getRoomType());
-        }
-        if (roomUpdateRequest.getPricePerNight() != null) {
-            room.setPricePerNight(roomUpdateRequest.getPricePerNight());
-        }
-        if (roomUpdateRequest.getMaxOccupancy() != null) {
-            room.setMaxOccupancy(roomUpdateRequest.getMaxOccupancy());
-        }
-        if (roomUpdateRequest.getDescription() != null) {
-            room.setDescription(roomUpdateRequest.getDescription());
-        }
-        if (roomUpdateRequest.getState() != null) {
-            room.setState(roomUpdateRequest.getState());
-        }
-        if (roomUpdateRequest.getPhoto() != null) {
-            room.setPhoto(roomUpdateRequest.getPhoto());
-        }
+        updateIfNotNull(roomUpdateRequest.getRoomNumber(), room::setRoomNumber);
+        updateIfNotNull(roomUpdateRequest.getRoomType(), room::setRoomType);
+        updateIfNotNull(roomUpdateRequest.getPricePerNight(), room::setPricePerNight);
+        updateIfNotNull(roomUpdateRequest.getMaxOccupancy(), room::setMaxOccupancy);
+        updateIfNotNull(roomUpdateRequest.getDescription(), room::setDescription);
+        updateIfNotNull(roomUpdateRequest.getState(), room::setState);
+        updateIfNotNull(roomUpdateRequest.getPhoto(), room::setPhoto);
+
         return roomRepository.save(room);
     }
 
