@@ -62,6 +62,14 @@ public class Room extends BaseEntity {
         this.maxOccupancy = maxOccupancy;
     }
 
+    public void prepareToBook() {
+        if (this.state == RoomState.OPEN) {
+            this.state = RoomState.WAITING;
+        } else {
+            throw new IllegalStateException("Room is not available for booking.");
+        }
+    }
+
     public void bookRoom() {
         if (this.state == RoomState.OPEN || this.state == RoomState.WAITING) {
             this.state = RoomState.BOOKED;
@@ -71,7 +79,7 @@ public class Room extends BaseEntity {
     }
 
     public void cancelBooking() {
-        if (this.state == RoomState.BOOKED) {
+        if (this.state == RoomState.BOOKED || this.state == RoomState.WAITING) {
             this.state = RoomState.OPEN; // Or WAITING
         } else {
             throw new IllegalStateException("Room is not currently booked.");
