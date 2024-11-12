@@ -15,7 +15,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v2/branches")
 @RequiredArgsConstructor
-@PreAuthorize("hasAuthority('ADMIN')")
 public class BranchController {
     private final IBranchService branchService;
 
@@ -48,24 +47,28 @@ public class BranchController {
         return ResponseEntity.ok(rooms);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
     public ResponseEntity<Branch> addBranch(@RequestBody Branch branch) {
         Branch savedBranch = branchService.save(branch);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedBranch);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBranch(@PathVariable Long id) {
         branchService.deleteBranchById(id);
         return ResponseEntity.ok("Branch soft-deleted successfully.");
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{branchId}/services/add")
     public ResponseEntity<String> addServiceToBranch(@PathVariable Long branchId, @RequestParam Long serviceId) {
         branchService.addServiceToBranch(branchId, serviceId);
         return ResponseEntity.ok("Service added to branch successfully.");
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{branchId}/services/remove")
     public ResponseEntity<String> removeServiceFromBranch(@PathVariable Long branchId, @RequestParam Long serviceId) {
         branchService.removeServiceFromBranch(branchId, serviceId);
