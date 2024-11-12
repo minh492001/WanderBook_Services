@@ -1,6 +1,6 @@
 package com.wander_book.model.service_provide;
 
-import com.wander_book.model.Booking;
+import com.wander_book.model.booking.Booking;
 import com.wander_book.model.comon.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
