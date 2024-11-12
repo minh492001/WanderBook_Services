@@ -23,7 +23,7 @@ public interface IUserService extends IBaseService<User> {
 
     User updateUser(Long id, editUserRequest updatedUser);
 
-    User resetPassword(Long id, ResetPasswordRequest resetPasswordRequest);
+    void resetPassword(String email, ResetPasswordRequest resetPasswordRequest);
     // Count users by age
 //    long countUsersByAge(int age);
 
