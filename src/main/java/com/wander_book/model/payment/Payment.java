@@ -1,8 +1,7 @@
-package com.wander_book.model;
+package com.wander_book.model.payment;
 
+import com.wander_book.model.booking.Booking;
 import com.wander_book.model.comon.BaseEntity;
-import com.wander_book.model.enums.PaymentMethod;
-import com.wander_book.model.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
