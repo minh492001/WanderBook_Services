@@ -1,7 +1,6 @@
 package com.wander_book.service.impl;
 
 import com.wander_book.exception.auth.UserAlreadyExistsException;
-import com.wander_book.exception.user.PasswordMismatchException;
 import com.wander_book.model.user.User;
 import com.wander_book.model.user.Roles;
 import com.wander_book.repository.UserRepository;
@@ -81,16 +80,16 @@ public class UserService extends BaseServiceImpl<User> implements IUserService {
         }).orElseThrow(() -> new IllegalArgumentException("User not found or has been deleted"));
     }
     @Override
-    public User resetPassword(Long id, ResetPasswordRequest resetPasswordRequest) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with ID: " + id));
+    public void resetPassword(String email, ResetPasswordRequest resetPasswordRequest) {
+        User existingUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with Email: " + email));
 
         if (!resetPasswordRequest.newPassword().equals(resetPasswordRequest.confirmPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "New password and confirm password do not match");
         }
 
         existingUser.setPassword(passwordEncoder.encode(resetPasswordRequest.newPassword()));
-        return userRepository.save(existingUser);
+        userRepository.save(existingUser);
     }
 //    @Override
 //    public long countUsersByAge(int age) {
