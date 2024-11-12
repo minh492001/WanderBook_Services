@@ -38,7 +38,7 @@ public interface IBookingService extends IBaseService<Booking> {
 
     Booking updateBooking(Long id, SimpleBookingRequest updateBooking);
 
-    Booking extendBooking(Long bookingId, Long newCheckOutTimestamp);
+    void extendBooking(Long bookingId, Long newCheckOutTimestamp);
 
     void softDeleteById(Long id);
 }

@@ -193,7 +193,7 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
     }
 
     @Override
-    public Booking extendBooking(Long id, Long newCheckOutTimestamp) {
+    public void extendBooking(Long id, Long newCheckOutTimestamp) {
         Optional<Booking> bookingOptional = bookingRepository.findById(id);
         if (bookingOptional.isPresent()) {
             Booking booking = bookingOptional.get();
