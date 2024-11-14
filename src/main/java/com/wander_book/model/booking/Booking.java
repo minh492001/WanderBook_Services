@@ -104,16 +104,5 @@ public class Booking extends BaseEntity {
         this.confirmationCode =  RandomStringUtils.randomNumeric(10);
     }
 
-    // Method to add service
-    public void addReservationService(ServiceProvide serviceProvide, int quantity) {
-        ServiceReservation bookingService = ServiceReservation.createBookingService(this, serviceProvide, quantity);
-        bookingServices.add(bookingService);
-    }
-
-    // Method to remove service
-    public void removeReservationService(ServiceReservation bookingService) {
-        bookingServices.remove(bookingService);
-        bookingService.onDelete();
-    }
 
 }
