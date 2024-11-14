@@ -2,20 +2,25 @@ package com.wander_book.model.service_provide;
 
 import com.wander_book.model.booking.Booking;
 import com.wander_book.model.comon.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
+@Table(name = "service_reservations")
 public class ServiceReservation extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @ManyToOne
     @JoinColumn(name = "booking_id")
     private Booking booking;
@@ -24,18 +29,13 @@ public class ServiceReservation extends BaseEntity {
     @JoinColumn(name = "service_id")
     private ServiceProvide serviceProvide;
 
-    private int serviceQuantity;
+    private int quantity;
     private BigDecimal price;
+    private BigDecimal totalPrice;
 
-    public ServiceReservation(Booking booking, ServiceProvide serviceProvide, int serviceQuantity, BigDecimal price) {
-        this.booking = booking;
-        this.serviceProvide = serviceProvide;
-        this.serviceQuantity = serviceQuantity;
-        this.price = price;
-        this.setCreatedAt(System.currentTimeMillis());
-    }
-
-    public static ServiceReservation createBookingService(Booking booking, ServiceProvide serviceProvide, int quantity) {
-        return new ServiceReservation(booking, serviceProvide, quantity, serviceProvide.getPrice().multiply(BigDecimal.valueOf(quantity)));
+    @PostConstruct
+    public void initializeServiceReservation() {
+        this.onCreate();
+        this.totalPrice =  this.price.multiply(BigDecimal.valueOf(this.quantity));
     }
 }
