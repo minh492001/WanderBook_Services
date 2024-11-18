@@ -11,7 +11,6 @@ import com.wander_book.repository.RoomAvailabilityRepository;
 import com.wander_book.repository.RoomRepository;
 import com.wander_book.request.room.AddNewRoomRequest;
 import com.wander_book.request.room.RoomUpdateRequest;
-import com.wander_book.response.RoomAvailabilityResponse;
 import com.wander_book.response.RoomResponse;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IBranchService;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 

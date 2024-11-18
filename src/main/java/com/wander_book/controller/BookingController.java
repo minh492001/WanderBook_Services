@@ -3,7 +3,6 @@ package com.wander_book.controller;
 import com.wander_book.model.booking.Booking;
 import com.wander_book.model.booking.BookingStatus;
 import com.wander_book.model.room.Room;
-import com.wander_book.model.user.User;
 import com.wander_book.request.SimpleBookingRequest;
 import com.wander_book.service.IBookingService;
 import com.wander_book.service.IRoomService;
@@ -14,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor

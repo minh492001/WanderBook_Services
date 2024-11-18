@@ -5,13 +5,10 @@ import com.wander_book.model.room.Room;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
 import com.wander_book.repository.comon.BaseRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository

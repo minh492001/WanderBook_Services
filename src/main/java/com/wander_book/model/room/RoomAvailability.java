@@ -1,7 +1,5 @@
 package com.wander_book.model.room;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wander_book.model.booking.Booking;
 import com.wander_book.model.comon.BaseEntity;
 import jakarta.persistence.*;

@@ -1,8 +1,6 @@
 package com.wander_book.model.room;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wander_book.model.Branch;
 import com.wander_book.model.comon.BaseEntity;
 import jakarta.persistence.*;

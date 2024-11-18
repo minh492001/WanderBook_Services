@@ -1,8 +1,6 @@
 package com.wander_book.mapper;
 
 import com.wander_book.model.room.Room;
-import com.wander_book.model.room.RoomAvailability;
-import com.wander_book.response.RoomAvailabilityResponse;
 import com.wander_book.response.RoomResponse;
 import org.springframework.stereotype.Component;
 

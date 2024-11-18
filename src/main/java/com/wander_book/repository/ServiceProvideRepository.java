@@ -1,11 +1,8 @@
 package com.wander_book.repository;
 
-import com.wander_book.model.Branch;
 import com.wander_book.model.service_provide.ServiceProvide;
 import com.wander_book.repository.comon.BaseRepository;
 import lombok.NonNull;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
 import java.util.List;
