@@ -1,13 +1,17 @@
 package com.wander_book.repository;
 
+import com.wander_book.model.Branch;
 import com.wander_book.model.room.Room;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
 import com.wander_book.repository.comon.BaseRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -20,7 +24,7 @@ public interface RoomRepository extends BaseRepository<Room> {
     List<Room> findByState(RoomState state);
 
     // Find all rooms by branch id
-    List<Room> findByBranchId(Long branchId);
+    List<Room> findByBranch(Branch branch);
 
     // Find all rooms by branch id and state
     List<Room> findByBranch_IdAndState(Long branchId, RoomState state);
@@ -33,4 +37,14 @@ public interface RoomRepository extends BaseRepository<Room> {
 
     // Check if a room exists by room number
     boolean existsByRoomNumber(String roomNumber);
+
+//    @Query("SELECT COUNT(r) FROM Room r WHERE r.branch = :branch")
+//    Long countByBranch(@Param("branch") Branch branch);
+//
+//    @Query("SELECT r.roomType, COUNT(r) FROM Room r WHERE r.branch = :branch GROUP BY r.roomType")
+//    List<Map<String, Object>> countRoomsByTypeInBranch(@Param("branch") Branch branch);
+//
+//    @Query("SELECT r.roomType, COUNT(r) FROM Room r GROUP BY r.roomType")
+//    List<Map<String, Object>> countRoomsByType();
+
 }

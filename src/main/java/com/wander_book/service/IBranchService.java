@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface IBranchService extends IBaseService<Branch> {
     Optional<Branch> findByName(String branchName);
 
+
     boolean existsByName(String branchName);
 
     List<Branch> findByCity(String city);

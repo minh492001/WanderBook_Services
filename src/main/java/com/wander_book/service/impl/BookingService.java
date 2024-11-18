@@ -4,8 +4,10 @@ import com.wander_book.model.Branch;
 import com.wander_book.model.booking.Booking;
 import com.wander_book.model.booking.BookingStatus;
 import com.wander_book.model.room.Room;
+import com.wander_book.model.room.RoomAvailability;
 import com.wander_book.model.user.User;
 import com.wander_book.repository.BookingRepository;
+import com.wander_book.repository.RoomAvailabilityRepository;
 import com.wander_book.request.SimpleBookingRequest;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IBookingService;
@@ -18,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static com.wander_book.service.Common.UpdateUtil.*;
+import static com.wander_book.service.Common.Utility.*;
 
 @Service
 public class BookingService extends BaseServiceImpl<Booking> implements IBookingService {
@@ -27,11 +29,13 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
     private final IBranchService branchService;
     private final IRoomService roomService;
     private final IUserService userService;
+    private final RoomAvailabilityRepository roomAvailabilityRepository;
 
 
-    public BookingService(BookingRepository bookingRepository, BranchService branchService, RoomService roomService, IUserService userService) {
+    public BookingService(BookingRepository bookingRepository, BranchService branchService, RoomService roomService, IUserService userService, RoomAvailabilityRepository roomAvailabilityRepository) {
         this.roomService = roomService;
         this.userService = userService;
+        this.roomAvailabilityRepository = roomAvailabilityRepository;
         this.repository = bookingRepository;
         this.bookingRepository = bookingRepository;
         this.branchService = branchService;
@@ -98,8 +102,17 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
         Room room = roomService.findById(bookingRequest.getRoomId())
                 .orElseThrow(() -> new EntityNotFoundException("Room not found with id: " + bookingRequest.getRoomId()));
 
-        if ((bookingRequest.getAdultsCount()+bookingRequest.getChildrenCount()) > room.getMaxOccupancy()) {
+        if ((bookingRequest.getAdultsCount() + bookingRequest.getChildrenCount()) > room.getMaxOccupancy()) {
             throw new IllegalArgumentException("Total guests cannot exceed room's max occupancy of " + room.getMaxOccupancy());
+        }
+
+        List<RoomAvailability> conflictingBookings = roomAvailabilityRepository.findConflictingBookings(
+                room,
+                bookingRequest.getCheckInTimestamp(),
+                bookingRequest.getCheckOutTimestamp()
+        );
+        if (!conflictingBookings.isEmpty()) {
+            throw new IllegalStateException("The selected room is already booked for the specified time period.");
         }
 
         User user = userService.findById(bookingRequest.getUserId())
@@ -118,7 +131,18 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
                 .build();
 
         booking.initializeBooking();
-        return bookingRepository.save(booking);
+
+        Booking savedBooking = bookingRepository.save(booking);
+
+        RoomAvailability roomAvailability = RoomAvailability.builder()
+                .room(room)
+                .booking(savedBooking)
+                .startDate(bookingRequest.getCheckInTimestamp())
+                .endDate(bookingRequest.getCheckOutTimestamp())
+                .build();
+        roomAvailabilityRepository.save(roomAvailability);
+
+        return savedBooking;
     }
 
     @Override
@@ -130,7 +154,7 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
                 throw new IllegalStateException("Booking is not in the state to be confirmed");
             }
             booking.setStatus(BookingStatus.CONFIRMED);
-            booking.getRoom().bookRoom();
+            booking.getRoom().setBookRoom();
             bookingRepository.save(booking);
         }
         throw new EntityNotFoundException("Booking not found with id: " + bookingId);
@@ -141,14 +165,18 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
         Optional<Booking> bookingOptional = bookingRepository.findById(bookingId);
         if (bookingOptional.isPresent()) {
             Booking booking = bookingOptional.get();
+
             if (booking.getStatus() == BookingStatus.PENDING || booking.getStatus() == BookingStatus.CONFIRMED) {
                 booking.setStatus(BookingStatus.CANCELED);
-                booking.getRoom().cancelBooking();
+                booking.getRoom().reopenRoom();
+                roomAvailabilityRepository.deleteByBooking(booking);
                 bookingRepository.save(booking);
                 return;
             }
+
             throw new IllegalStateException("Booking is already canceled or completed");
         }
+
         throw new EntityNotFoundException("Booking not found with id: " + bookingId);
     }
 
@@ -174,6 +202,24 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
         if (bookingOptional.isPresent()) {
             Booking booking = bookingOptional.get();
 
+            // Check if dates are being updated and validate availability
+            boolean datesChanged =
+                    !updateBooking.getCheckInTimestamp().equals(booking.getCheckInTimestamp()) ||
+                            !updateBooking.getCheckOutTimestamp().equals(booking.getCheckOutTimestamp());
+
+            if (datesChanged) {
+                // Check for conflicts in RoomAvailability
+                List<RoomAvailability> conflicts = roomAvailabilityRepository.findConflictingBookings(
+                        room,
+                        updateBooking.getCheckInTimestamp(),
+                        updateBooking.getCheckOutTimestamp()
+                );
+
+                if (!conflicts.isEmpty() && !conflicts.stream().allMatch(ra -> ra.getBooking().getId().equals(id))) {
+                    throw new IllegalArgumentException("Room is already booked for the given time period.");
+                }
+            }
+
             booking.setRoom(room);
             booking.setUser(user);
 
@@ -187,7 +233,20 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
             updateIfNonNegative(updateBooking.getChildrenCount(), booking::setChildrenCount);
             updateIfPositive(updateBooking.getTotalGuests(), booking::setTotalGuests);
 
-            return bookingRepository.save(booking);
+            // Save the updated booking
+            Booking updatedBooking = bookingRepository.save(booking);
+
+            // Update RoomAvailability if dates changed
+            if (datesChanged) {
+                RoomAvailability availability = roomAvailabilityRepository.findByBooking(booking)
+                        .orElseThrow(() -> new EntityNotFoundException("RoomAvailability not found for booking id: " + id));
+
+                availability.setStartDate(booking.getCheckInTimestamp());
+                availability.setEndDate(booking.getCheckOutTimestamp());
+                roomAvailabilityRepository.save(availability);
+            }
+
+            return updatedBooking;
         }
         throw new EntityNotFoundException("Booking not found with id: " + id);
     }
@@ -198,10 +257,23 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
         if (bookingOptional.isPresent()) {
             Booking booking = bookingOptional.get();
             if (booking.getStatus() == BookingStatus.COMPLETED || booking.getStatus() == BookingStatus.CANCELED) {
-                booking.setCheckOutTimestamp(newCheckOutTimestamp);
-                bookingRepository.save(booking);
+                throw new IllegalStateException("Booking cannot be extended");
             }
-            throw new IllegalStateException("Booking cannot be extended");
+
+            if (newCheckOutTimestamp <= booking.getCheckOutTimestamp()) {
+                throw new IllegalArgumentException("New check-out date must be after the current check-out date.");
+            }
+            // Update the booking's check-out timestamp
+            booking.setCheckOutTimestamp(newCheckOutTimestamp);
+
+            // Update the associated RoomAvailability
+            RoomAvailability availability = roomAvailabilityRepository.findByBooking(booking)
+                    .orElseThrow(() -> new EntityNotFoundException("RoomAvailability not found for booking id: " + id));
+
+            availability.setEndDate(newCheckOutTimestamp);
+            roomAvailabilityRepository.save(availability);
+
+            bookingRepository.save(booking);
         }
         throw new EntityNotFoundException("Booking not found with id: " + id);
     }
@@ -211,10 +283,19 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
         Optional<Booking> bookingOptional = bookingRepository.findById(id);
         if (bookingOptional.isPresent()) {
             Booking booking = bookingOptional.get();
+
+            // Soft delete the booking
             booking.onDelete();
+
+            // Remove the associated RoomAvailability
+            RoomAvailability availability = roomAvailabilityRepository.findByBooking(booking)
+                    .orElseThrow(() -> new EntityNotFoundException("RoomAvailability not found for booking id: " + id));
+            roomAvailabilityRepository.delete(availability);
+
             bookingRepository.save(booking);
+        } else {
+            throw new EntityNotFoundException("Booking not found with id: " + id);
         }
-        throw new EntityNotFoundException("Booking not found with id: " + id);
     }
 
 }

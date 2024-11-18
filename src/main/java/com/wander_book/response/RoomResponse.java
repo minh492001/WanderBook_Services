@@ -1,32 +1,17 @@
 package com.wander_book.response;
 
-import com.wander_book.model.room.RoomType;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.apache.tomcat.util.codec.binary.Base64;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
-@NoArgsConstructor
 public class RoomResponse {
     private Long id;
-    private RoomType roomType;
-    private BigDecimal roomPrice;
-    private boolean isBooked;
-    private String photo;
-
-    public RoomResponse(Long id, RoomType roomType, BigDecimal roomPrice) {
-        this.id = id;
-        this.roomType = roomType;
-        this.roomPrice = roomPrice;
-    }
-
-    public RoomResponse(Long id, RoomType roomType, BigDecimal roomPrice, boolean isBooked, byte[] photoBBytes) {
-        this.id = id;
-        this.roomType = roomType;
-        this.roomPrice = roomPrice;
-        this.isBooked = isBooked;
-        this.photo = photoBBytes != null ? Base64.encodeBase64String(photoBBytes) : null;
-    }
+    private String roomNumber;
+    private String roomType;
+    private BigDecimal pricePerNight;
+    private int maxOccupancy;
+    private String state;
+    private List<RoomAvailabilityResponse> futureBookings;
 }

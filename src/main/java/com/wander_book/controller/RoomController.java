@@ -5,6 +5,7 @@ import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
 import com.wander_book.request.room.AddNewRoomRequest;
 import com.wander_book.request.room.RoomUpdateRequest;
+import com.wander_book.response.RoomResponse;
 import com.wander_book.service.IRoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,12 +29,11 @@ public class RoomController {
         return ResponseEntity.ok("hello");
     }
 
-    // Get all services
-    @GetMapping("/all")
-    public ResponseEntity<List<Room>> getAllServices() {
-        List<Room> rooms = roomService.findAll();
-        return ResponseEntity.ok(rooms);
-    }
+//    @GetMapping("/all")
+//    public ResponseEntity<List<Room>> getAllServices() {
+//        List<Room> rooms = roomService.findAll();
+//        return ResponseEntity.ok(rooms);
+//    }
 
     @GetMapping("/{roomId}")
     public ResponseEntity<Room> getRoomById(@PathVariable Long roomId) {
@@ -42,10 +42,10 @@ public class RoomController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/branch/{branchId}")
-    public ResponseEntity<List<Room>> getRoomsByBranch(@PathVariable Long branchId) {
-        return ResponseEntity.ok(roomService.findByBranchId(branchId));
-    }
+//    @GetMapping("/branch/{branchId}")
+//    public ResponseEntity<List<Room>> getRoomsByBranch(@PathVariable Long branchId) {
+//        return ResponseEntity.ok(roomService.findByBranch(branchId));
+//    }
 
     @GetMapping("/state/{state}")
     public ResponseEntity<List<Room>> getRoomsByState(@PathVariable RoomState state) {
@@ -76,5 +76,17 @@ public class RoomController {
     public ResponseEntity<Room> addNewRoom(@RequestBody @Valid AddNewRoomRequest request) {
         Room room = roomService.addNewRoom(request);
         return ResponseEntity.ok(room);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<RoomResponse>> getAllRoomsWithFutureBookings() {
+        List<RoomResponse> rooms = roomService.getRoomsWithBookings();
+        return ResponseEntity.ok(rooms);
+    }
+
+    @GetMapping("/branch/{branchId}")
+    public ResponseEntity<List<RoomResponse>> getRoomsWithBookingsByBranch(@PathVariable Long branchId) {
+        List<RoomResponse> rooms = roomService.getRoomsWithBookingsByBranch(branchId);
+        return ResponseEntity.ok(rooms);
     }
 }

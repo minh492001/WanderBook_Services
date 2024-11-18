@@ -3,7 +3,7 @@ package com.wander_book.service.Common;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
-public class UpdateUtil {
+public class Utility {
     // Cập nhật nếu giá trị không null
     public static <T> void updateIfNotNull(T newValue, Consumer<T> setter) {
         if (newValue != null) {

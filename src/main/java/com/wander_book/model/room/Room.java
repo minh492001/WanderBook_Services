@@ -1,6 +1,8 @@
 package com.wander_book.model.room;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wander_book.model.Branch;
 import com.wander_book.model.comon.BaseEntity;
 import jakarta.persistence.*;
@@ -8,6 +10,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -40,6 +44,9 @@ public class Room extends BaseEntity {
     @Lob
     private Blob photo;
 
+    @Transient
+    private List<RoomAvailability> futureBookings = new ArrayList<>();
+
     public Room() {
         super();
     }
@@ -62,27 +69,12 @@ public class Room extends BaseEntity {
         this.maxOccupancy = maxOccupancy;
     }
 
-    public void prepareToBook() {
+    // Methods to manage global states
+    public void setBookRoom() {
         if (this.state == RoomState.OPEN) {
-            this.state = RoomState.WAITING;
-        } else {
-            throw new IllegalStateException("Room is not available for booking.");
-        }
-    }
-
-    public void bookRoom() {
-        if (this.state == RoomState.OPEN || this.state == RoomState.WAITING) {
             this.state = RoomState.BOOKED;
         } else {
-            throw new IllegalStateException("Room is not available for booking.");
-        }
-    }
-
-    public void cancelBooking() {
-        if (this.state == RoomState.BOOKED || this.state == RoomState.WAITING) {
-            this.state = RoomState.OPEN; // Or WAITING
-        } else {
-            throw new IllegalStateException("Room is not currently booked.");
+            throw new IllegalStateException("Room is not available to book.");
         }
     }
 
@@ -103,10 +95,15 @@ public class Room extends BaseEntity {
     }
 
     public void reopenRoom() {
-        if (this.state == RoomState.CLOSED || this.state == RoomState.MAINTENANCE || this.state == RoomState.WAITING ) {
+        if (this.state == RoomState.CLOSED || this.state == RoomState.MAINTENANCE) {
             this.state = RoomState.OPEN;
         } else {
             throw new IllegalStateException("Room state is not suitable for reopening.");
         }
+    }
+
+    // Utility to check if the room is globally available for booking
+    public boolean isGloballyAvailable() {
+        return this.state == RoomState.OPEN;
     }
 }

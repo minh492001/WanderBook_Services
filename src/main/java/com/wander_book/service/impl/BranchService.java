@@ -8,6 +8,7 @@ import com.wander_book.repository.RoomRepository;
 import com.wander_book.repository.ServiceProvideRepository;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IBranchService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +77,7 @@ public class BranchService extends BaseServiceImpl<Branch> implements IBranchSer
 
     @Override
     public List<Room> getRoomsByBranchId(Long branchId) {
-        return roomRepository.findByBranchId(branchId);
+        Branch branch = branchRepository.findById(branchId).orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + branchId));
+        return roomRepository.findByBranch(branch);
     }
 }

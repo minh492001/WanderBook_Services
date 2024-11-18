@@ -75,7 +75,7 @@ public class Booking extends BaseEntity {
         this.status = BookingStatus.PENDING;
         setConfirmationCode();
         if (room != null) {
-            room.prepareToBook(); // Set the room status to "Waiting"
+            room.setBookRoom(); // Set the room status to "Booked"
         }
     }
 
@@ -88,7 +88,7 @@ public class Booking extends BaseEntity {
         }
         setConfirmationCode();
         if (this.room != null) {
-            this.room.prepareToBook(); // Set room status to "Waiting"
+            this.room.setBookRoom(); // Set room status to "Booked"
         }
     }
 

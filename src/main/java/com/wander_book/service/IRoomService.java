@@ -5,6 +5,7 @@ import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
 import com.wander_book.request.room.AddNewRoomRequest;
 import com.wander_book.request.room.RoomUpdateRequest;
+import com.wander_book.response.RoomResponse;
 import com.wander_book.service.Common.IBaseService;
 
 import java.math.BigDecimal;
@@ -17,7 +18,7 @@ public interface IRoomService extends IBaseService<Room> {
 
     List<Room> findByState(RoomState state);
 
-    List<Room> findByBranchId(Long branchId);
+    List<Room> findByBranch(Long branchId);
 
     List<Room> findByBranchIdAndState(Long branchId, RoomState state);
 
@@ -30,4 +31,8 @@ public interface IRoomService extends IBaseService<Room> {
     Room addNewRoom(AddNewRoomRequest request);
 
     Room updateRoom(Long roomId, RoomUpdateRequest roomUpdateRequest);
+
+    List<RoomResponse> getRoomsWithBookings();
+
+    List<RoomResponse> getRoomsWithBookingsByBranch(Long branchId);
 }

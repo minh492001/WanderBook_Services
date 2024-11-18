@@ -17,10 +17,6 @@ import java.math.BigDecimal;
 @Table(name = "service_reservations")
 public class ServiceReservation extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @ManyToOne
     @JoinColumn(name = "booking_id")
     private Booking booking;
