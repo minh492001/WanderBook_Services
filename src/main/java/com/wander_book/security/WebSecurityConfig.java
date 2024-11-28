@@ -20,7 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @RequiredArgsConstructor
-@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 //@ComponentScan(basePackages = {"com.wander_book"}) //annotation is generally not needed unless you're trying to scan packages outside the default scope.
 public class WebSecurityConfig {
     private final HotelUserDetailsService userDetailsService;
