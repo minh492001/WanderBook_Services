@@ -2,7 +2,8 @@ package com.wander_book.service;
 
 import com.wander_book.model.Branch;
 import com.wander_book.model.room.Room;
-import com.wander_book.request.BranchNameRequest;
+import com.wander_book.request.branch.BranchDTO;
+import com.wander_book.request.branch.BranchNameDTO;
 import com.wander_book.service.Common.IBaseService;
 
 import java.util.List;
@@ -11,6 +12,9 @@ import java.util.Optional;
 public interface IBranchService extends IBaseService<Branch> {
     Optional<Branch> findByName(String branchName);
 
+    List<BranchDTO> getAllBranches();
+
+    BranchDTO getBranchById(Long id);
 
     boolean existsByName(String branchName);
 
@@ -24,5 +28,5 @@ public interface IBranchService extends IBaseService<Branch> {
 
     void removeServiceFromBranch(Long branchId, Long serviceId);
 
-    List<BranchNameRequest> getAllBranchNames();
+    List<BranchNameDTO> getAllBranchNames();
 }

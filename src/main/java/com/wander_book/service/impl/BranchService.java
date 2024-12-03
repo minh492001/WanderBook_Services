@@ -1,12 +1,14 @@
 package com.wander_book.service.impl;
 
+import com.wander_book.mapper.BranchMapper;
 import com.wander_book.model.Branch;
 import com.wander_book.model.room.Room;
 import com.wander_book.model.service_provide.ServiceProvide;
 import com.wander_book.repository.BranchRepository;
 import com.wander_book.repository.RoomRepository;
 import com.wander_book.repository.ServiceProvideRepository;
-import com.wander_book.request.BranchNameRequest;
+import com.wander_book.request.branch.BranchDTO;
+import com.wander_book.request.branch.BranchNameDTO;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IBranchService;
 import jakarta.persistence.EntityNotFoundException;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BranchService extends BaseServiceImpl<Branch> implements IBranchService {
@@ -22,13 +25,28 @@ public class BranchService extends BaseServiceImpl<Branch> implements IBranchSer
     private final BranchRepository branchRepository;
     private final RoomRepository roomRepository;
     private final ServiceProvideRepository serviceProvideRepository;
+    private final BranchMapper branchMapper;
 
     @Autowired
-    public BranchService(BranchRepository branchRepository, RoomRepository roomRepository, ServiceProvideRepository serviceProvideRepository) {
+    public BranchService(BranchRepository branchRepository, RoomRepository roomRepository, ServiceProvideRepository serviceProvideRepository, BranchMapper branchMapper) {
         this.repository = branchRepository;  // Initialize the inherited repository field
         this.branchRepository = branchRepository;
         this.roomRepository = roomRepository;
         this.serviceProvideRepository = serviceProvideRepository;
+        this.branchMapper = branchMapper;
+    }
+
+    @Override
+    public List<BranchDTO> getAllBranches() {
+        List<Branch> branches = branchRepository.findAll();
+        return branches.stream().map(branchMapper::toBranchDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public BranchDTO getBranchById(Long id) {
+        Branch branch = branchRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Branch not found with id: " + id));
+        return branchMapper.toBranchDTO(branch);
     }
 
     @Override
@@ -83,10 +101,10 @@ public class BranchService extends BaseServiceImpl<Branch> implements IBranchSer
     }
 
     @Override
-    public List<BranchNameRequest> getAllBranchNames() {
+    public List<BranchNameDTO> getAllBranchNames() {
         List<Branch> branches = branchRepository.findAll();
         return branches.stream()
-                .map(branch -> new BranchNameRequest(branch.getId(), branch.getBranchName()))
+                .map(branch -> new BranchNameDTO(branch.getId(), branch.getBranchName()))
                 .toList();
     }
 }

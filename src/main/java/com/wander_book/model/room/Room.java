@@ -18,7 +18,6 @@ import java.util.List;
 @Table(name = "rooms")
 public class Room extends BaseEntity {
 
-    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;

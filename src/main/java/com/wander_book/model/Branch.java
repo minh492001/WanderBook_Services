@@ -32,7 +32,6 @@ public class Branch extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "service_id", referencedColumnName = "id"))
     private Collection<ServiceProvide> serviceProvides = new HashSet<>();
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<Room> rooms;
 

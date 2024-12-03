@@ -2,7 +2,8 @@ package com.wander_book.controller;
 
 import com.wander_book.model.Branch;
 import com.wander_book.model.room.Room;
-import com.wander_book.request.BranchNameRequest;
+import com.wander_book.request.branch.BranchDTO;
+import com.wander_book.request.branch.BranchNameDTO;
 import com.wander_book.service.IBranchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,15 +26,14 @@ public class BranchController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Branch>> getAllBranches() {
-        List<Branch> branches = branchService.findAll();
+    public ResponseEntity<List<BranchDTO>> getAllBranches() {
+        List<BranchDTO> branches = branchService.getAllBranches();
         return ResponseEntity.ok(branches);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Branch> getBranchById(@PathVariable Long id) {
-        Optional<Branch> branch = branchService.findByIdAndNotDeleted(id);
-        return branch.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    public BranchDTO getBranchById(@PathVariable Long id) {
+        return branchService.getBranchById(id);
     }
 
     @GetMapping("/city/{city}")
@@ -77,8 +77,8 @@ public class BranchController {
     }
 
     @GetMapping("/names")
-    public ResponseEntity<List<BranchNameRequest>> getBranchNames() {
-        List<BranchNameRequest> branchNames = branchService.getAllBranchNames();
+    public ResponseEntity<List<BranchNameDTO>> getBranchNames() {
+        List<BranchNameDTO> branchNames = branchService.getAllBranchNames();
         return ResponseEntity.ok(branchNames);
     }
 }
