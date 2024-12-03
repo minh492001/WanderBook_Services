@@ -2,6 +2,7 @@ package com.wander_book.controller;
 
 import com.wander_book.model.Branch;
 import com.wander_book.model.room.Room;
+import com.wander_book.request.BranchNameRequest;
 import com.wander_book.service.IBranchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -73,5 +74,11 @@ public class BranchController {
     public ResponseEntity<String> removeServiceFromBranch(@PathVariable Long branchId, @RequestParam Long serviceId) {
         branchService.removeServiceFromBranch(branchId, serviceId);
         return ResponseEntity.ok("Service removed from branch successfully.");
+    }
+
+    @GetMapping("/names")
+    public ResponseEntity<List<BranchNameRequest>> getBranchNames() {
+        List<BranchNameRequest> branchNames = branchService.getAllBranchNames();
+        return ResponseEntity.ok(branchNames);
     }
 }

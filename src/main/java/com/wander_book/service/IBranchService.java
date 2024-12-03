@@ -2,6 +2,7 @@ package com.wander_book.service;
 
 import com.wander_book.model.Branch;
 import com.wander_book.model.room.Room;
+import com.wander_book.request.BranchNameRequest;
 import com.wander_book.service.Common.IBaseService;
 
 import java.util.List;
@@ -22,4 +23,6 @@ public interface IBranchService extends IBaseService<Branch> {
     void addServiceToBranch(Long branchId, Long serviceId);
 
     void removeServiceFromBranch(Long branchId, Long serviceId);
+
+    List<BranchNameRequest> getAllBranchNames();
 }

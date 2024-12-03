@@ -6,6 +6,7 @@ import com.wander_book.model.service_provide.ServiceProvide;
 import com.wander_book.repository.BranchRepository;
 import com.wander_book.repository.RoomRepository;
 import com.wander_book.repository.ServiceProvideRepository;
+import com.wander_book.request.BranchNameRequest;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IBranchService;
 import jakarta.persistence.EntityNotFoundException;
@@ -79,5 +80,13 @@ public class BranchService extends BaseServiceImpl<Branch> implements IBranchSer
     public List<Room> getRoomsByBranchId(Long branchId) {
         Branch branch = branchRepository.findById(branchId).orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + branchId));
         return roomRepository.findByBranch(branch);
+    }
+
+    @Override
+    public List<BranchNameRequest> getAllBranchNames() {
+        List<Branch> branches = branchRepository.findAll();
+        return branches.stream()
+                .map(branch -> new BranchNameRequest(branch.getId(), branch.getBranchName()))
+                .toList();
     }
 }
