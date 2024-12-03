@@ -1,7 +1,6 @@
 package com.wander_book.model;
 
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.wander_book.model.comon.BaseEntity;
 import com.wander_book.model.room.Room;
 import com.wander_book.model.service_provide.ServiceProvide;
