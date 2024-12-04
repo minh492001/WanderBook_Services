@@ -10,19 +10,12 @@ import java.util.Optional;
 @NoRepositoryBean // This ensures Spring doesn’t instantiate BaseRepository directly.
 public interface BaseRepository<T extends BaseEntity> extends JpaRepository<T, Long> {
 
-    // Find by ID (only if not soft-deleted)
-    default Optional<T> findByIdAndNotSoftDeleted(Long id) {
-        Optional<T> entity = findById(id);
-        return entity.isPresent() && entity.get().getDeletedAt() == null ? entity : Optional.empty();
-    }
+    List<T> findByDeletedAtIsNull();
 
-    // Find by creation date
-    List<T> findByCreatedAt(Long createdAt);
+    Optional<T> findById(long id);
 
-    // Find by update date
-    List<T> findByUpdatedAt(Long updatedAt);
+    Optional<T> findByIdAndDeletedAtIsNull(long id);
 
-    // Soft delete (updates deletedAt timestamp)
     default void softDelete(T entity) {
         entity.onDelete();
         save(entity);

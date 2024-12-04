@@ -1,6 +1,5 @@
 package com.wander_book.model.user;
 
-import com.wander_book.model.auth.ForgotPassword;
 import com.wander_book.model.comon.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,6 +9,9 @@ import lombok.*;
 @Data
 @Entity
 @Table(name = "users")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class User extends BaseEntity {
 
     private String fullName;
@@ -17,35 +19,13 @@ public class User extends BaseEntity {
     private String password;
     private String address;
     private String phoneNo;
-    private Long dateOfBirth; // (UNIX timestamp)
+    private Long dateOfBirth;
 
     @OneToOne(mappedBy = "user")
     private ForgotPassword forgotPassword;
 
     @Enumerated(EnumType.STRING)
     private Roles role;
-
-    public User() {
-        super();
-    }
-
-    public User(
-            String fullName,
-            String email,
-            String password,
-            String address,
-            String phoneNo,
-            Long dateOfBirth,
-            Roles role) {
-        super();
-        this.fullName = fullName;
-        this.email = email;
-        this.password = password;
-        this.address = address;
-        this.phoneNo = phoneNo;
-        this.dateOfBirth = dateOfBirth;
-        this.role = role;
-    }
 }
 
 

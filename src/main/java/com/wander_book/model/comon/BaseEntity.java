@@ -11,11 +11,10 @@ public abstract class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long createdAt; // UNIX timestamp for created_at
-    private Long updatedAt; // UNIX timestamp for updated_at
-    private Long deletedAt; // UNIX timestamp for deleted_at (soft delete)
+    private Long createdAt;
+    private Long updatedAt;
+    private Long deletedAt;
 
-    // Constructor that calls the preCreate method
     public BaseEntity() {
         onCreate();
     }
@@ -23,8 +22,6 @@ public abstract class BaseEntity {
     @PrePersist
     protected void onCreate() {
         this.createdAt = System.currentTimeMillis();
-        // this.createdAt = Instant.now().toEpochMilli();
-        // providing more consistent behavior when used in applications that handle time zones and other time-based operations
     }
 
     @PreUpdate
@@ -34,6 +31,6 @@ public abstract class BaseEntity {
 
     @PreRemove
     public void onDelete() {
-        this.deletedAt = System.currentTimeMillis(); // Mark deletion timestamp for soft delete
+        this.deletedAt = System.currentTimeMillis();
     }
 }

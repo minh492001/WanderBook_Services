@@ -1,7 +1,7 @@
 package com.wander_book.service;
 
 import com.wander_book.model.service_provide.ServiceProvide;
-import com.wander_book.request.service.SimpleService;
+import com.wander_book.dto.request.service.SimpleService;
 import com.wander_book.service.Common.IBaseService;
 
 import java.math.BigDecimal;

@@ -1,6 +1,6 @@
 package com.wander_book.service.impl;
 
-import com.wander_book.response.MailBody;
+import com.wander_book.dto.response.MailBody;
 import com.wander_book.service.IEmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

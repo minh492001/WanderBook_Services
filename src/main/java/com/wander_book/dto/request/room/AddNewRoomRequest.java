@@ -1,13 +1,19 @@
-package com.wander_book.request.room;
+package com.wander_book.dto.request.room;
 
 import com.wander_book.model.room.RoomType;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.sql.Blob;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class AddNewRoomRequest {
 
     @NotNull(message = "Branch ID is required")
@@ -27,5 +33,5 @@ public class AddNewRoomRequest {
 
     private String description;
 
-    private Blob photo;
+    private String photo;
 }

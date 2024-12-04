@@ -1,7 +1,7 @@
-package com.wander_book.request.branch;
+package com.wander_book.dto.request.branch;
 
-import com.wander_book.request.room.SimpleRoomDTO;
-import com.wander_book.request.service.SimpleServiceDTO;
+import com.wander_book.dto.request.room.SuperSimpleRoomDTO;
+import com.wander_book.dto.request.service.SimpleServiceDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +16,6 @@ public class BranchDTO {
     private String branchName;
     private String city;
     private String address;
-    private List<SimpleRoomDTO> rooms;
+    private List<SuperSimpleRoomDTO> rooms;
     private List<SimpleServiceDTO> services;
 }

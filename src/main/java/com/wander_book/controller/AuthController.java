@@ -2,9 +2,9 @@ package com.wander_book.controller;
 
 import com.wander_book.exception.auth.UserAlreadyExistsException;
 import com.wander_book.exception.user.PasswordMismatchException;
-import com.wander_book.request.auth.LoginRequest;
-import com.wander_book.request.auth.RegisterRequest;
-import com.wander_book.response.JwtResponse;
+import com.wander_book.dto.request.auth.LoginRequest;
+import com.wander_book.dto.request.auth.RegisterRequest;
+import com.wander_book.dto.response.JwtResponse;
 import com.wander_book.security.jwt.JwtUtils;
 import com.wander_book.security.user.HotelUserDetails;
 import com.wander_book.service.IUserService;

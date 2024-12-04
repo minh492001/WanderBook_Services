@@ -22,8 +22,7 @@ spring:
         format_sql: true
     #        enable_lazy_load_no_trans: true
     hibernate:
-#      ddl-auto: create-drop
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
   servlet:
     multipart:

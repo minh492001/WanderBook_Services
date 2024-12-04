@@ -3,7 +3,7 @@ package com.wander_book.controller;
 import com.wander_book.model.booking.Booking;
 import com.wander_book.model.booking.BookingStatus;
 import com.wander_book.model.room.Room;
-import com.wander_book.request.SimpleBookingRequest;
+import com.wander_book.dto.request.SimpleBookingRequest;
 import com.wander_book.service.IBookingService;
 import com.wander_book.service.IRoomService;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,12 +29,12 @@ public class BookingController {
     }
 
     // Get all bookings
-    @GetMapping("/all")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<List<Booking>> getAllUsers() {
-        List<Booking> bookings = bookingService.findAll();
-        return ResponseEntity.ok(bookings);
-    }
+//    @GetMapping("/all")
+//    @PreAuthorize("hasAuthority('ADMIN')")
+//    public ResponseEntity<List<Booking>> getAllUsers() {
+//        List<Booking> bookings = bookingService.findAll();
+//        return ResponseEntity.ok(bookings);
+//    }
 
     // Create a new booking
     @PostMapping

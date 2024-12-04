@@ -4,7 +4,7 @@ import com.wander_book.model.booking.Booking;
 import com.wander_book.model.booking.BookingStatus;
 import com.wander_book.model.room.Room;
 import com.wander_book.model.user.User;
-import com.wander_book.request.SimpleBookingRequest;
+import com.wander_book.dto.request.SimpleBookingRequest;
 import com.wander_book.service.Common.IBaseService;
 
 import java.util.List;

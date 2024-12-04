@@ -1,6 +1,6 @@
 package com.wander_book.repository;
 
-import com.wander_book.model.auth.ForgotPassword;
+import com.wander_book.model.user.ForgotPassword;
 import com.wander_book.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

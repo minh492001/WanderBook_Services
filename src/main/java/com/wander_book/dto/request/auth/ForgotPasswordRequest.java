@@ -1,4 +1,4 @@
-package com.wander_book.request.auth;
+package com.wander_book.dto.request.auth;
 
 import lombok.Data;
 

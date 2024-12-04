@@ -1,4 +1,4 @@
-package com.wander_book.response;
+package com.wander_book.dto.response;
 
 import lombok.Data;
 

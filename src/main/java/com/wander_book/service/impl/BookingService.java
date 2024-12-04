@@ -1,6 +1,6 @@
 package com.wander_book.service.impl;
 
-import com.wander_book.model.Branch;
+import com.wander_book.model.branch.Branch;
 import com.wander_book.model.booking.Booking;
 import com.wander_book.model.booking.BookingStatus;
 import com.wander_book.model.room.Room;
@@ -8,7 +8,7 @@ import com.wander_book.model.room.RoomAvailability;
 import com.wander_book.model.user.User;
 import com.wander_book.repository.BookingRepository;
 import com.wander_book.repository.RoomAvailabilityRepository;
-import com.wander_book.request.SimpleBookingRequest;
+import com.wander_book.dto.request.SimpleBookingRequest;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IBookingService;
 import com.wander_book.service.IBranchService;
@@ -154,7 +154,7 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
                 throw new IllegalStateException("Booking is not in the state to be confirmed");
             }
             booking.setStatus(BookingStatus.CONFIRMED);
-            booking.getRoom().setBookRoom();
+//            booking.getRoom().setBookRoom();
             bookingRepository.save(booking);
         }
         throw new EntityNotFoundException("Booking not found with id: " + bookingId);
@@ -168,7 +168,7 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
 
             if (booking.getStatus() == BookingStatus.PENDING || booking.getStatus() == BookingStatus.CONFIRMED) {
                 booking.setStatus(BookingStatus.CANCELED);
-                booking.getRoom().reopenRoom();
+//                booking.getRoom().reopenRoom();
                 roomAvailabilityRepository.deleteByBooking(booking);
                 bookingRepository.save(booking);
                 return;

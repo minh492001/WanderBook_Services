@@ -2,7 +2,7 @@ package com.wander_book.controller;
 
 
 import com.wander_book.model.service_provide.ServiceProvide;
-import com.wander_book.request.service.SimpleService;
+import com.wander_book.dto.request.service.SimpleService;
 import com.wander_book.service.IServiceProvideService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,11 +28,11 @@ public class ServiceProvideController {
     }
 
     // Get all services
-    @GetMapping("/all")
-    public ResponseEntity<List<ServiceProvide>> getAllServices() {
-        List<ServiceProvide> services = serviceProvideService.findAll();
-        return ResponseEntity.ok(services);
-    }
+//    @GetMapping("/all")
+//    public ResponseEntity<List<ServiceProvide>> getAllServices() {
+//        List<ServiceProvide> services = serviceProvideService.findAll();
+//        return ResponseEntity.ok(services);
+//    }
 
     // Get service by ID
     @GetMapping("/{id}")

@@ -1,13 +1,11 @@
-package com.wander_book.model;
+package com.wander_book.model.branch;
 
 
 import com.wander_book.model.comon.BaseEntity;
 import com.wander_book.model.room.Room;
 import com.wander_book.model.service_provide.ServiceProvide;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,6 +13,8 @@ import java.util.HashSet;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "branches")
 public class Branch extends BaseEntity {
@@ -33,11 +33,4 @@ public class Branch extends BaseEntity {
 
     @OneToMany(mappedBy = "branch", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<Room> rooms;
-
-    public Branch(String branchName, String city, String address) {
-        super();
-        this.branchName = branchName;
-        this.city = city;
-        this.address = address;
-    }
 }

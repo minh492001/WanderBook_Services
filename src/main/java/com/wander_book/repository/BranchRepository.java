@@ -1,6 +1,6 @@
 package com.wander_book.repository;
 
-import com.wander_book.model.Branch;
+import com.wander_book.model.branch.Branch;
 import com.wander_book.repository.comon.BaseRepository;
 
 import java.util.List;
@@ -10,5 +10,4 @@ public interface BranchRepository extends BaseRepository<Branch> {
     Optional<Branch> findByBranchName(String branchName);
     boolean existsByBranchName(String branchName);
     List<Branch> findByCity(String city);
-    List<Branch> findByServiceProvidesId(Long serviceId);
 }

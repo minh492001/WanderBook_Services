@@ -1,11 +1,12 @@
 package com.wander_book.service;
 
+import com.wander_book.dto.request.room.RoomDetailsDTO;
+import com.wander_book.dto.request.room.SimpleRoomDTO;
 import com.wander_book.model.room.Room;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
-import com.wander_book.request.room.AddNewRoomRequest;
-import com.wander_book.request.room.RoomUpdateRequest;
-import com.wander_book.response.RoomResponse;
+import com.wander_book.dto.request.room.AddNewRoomRequest;
+import com.wander_book.dto.request.room.RoomUpdateRequest;
 import com.wander_book.service.Common.IBaseService;
 
 import java.math.BigDecimal;
@@ -14,25 +15,31 @@ import java.util.Optional;
 
 public interface IRoomService extends IBaseService<Room> {
 
-    Optional<Room> findByRoomNumber(String roomNumber);
-
-    List<Room> findByState(RoomState state);
-
-    List<Room> findByBranch(Long branchId);
-
-    List<Room> findByBranchIdAndState(Long branchId, RoomState state);
-
-    List<Room> findByRoomTypeAndPricePerNightBetween(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice);
-
-    List<Room> findByBranchIdAndRoomTypeAndPricePerNightBetween(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice);
-
+    //No photo
+    List<SimpleRoomDTO> getAllRooms();
+    Optional<SimpleRoomDTO> findByRoomId(long id);
+    Optional<SimpleRoomDTO> findByRoomNumber(String roomNumber);
     boolean existsByRoomNumber(String roomNumber);
 
-    Room addNewRoom(AddNewRoomRequest request);
+    List<SimpleRoomDTO> findByState(RoomState state);
 
-    Room updateRoom(Long roomId, RoomUpdateRequest roomUpdateRequest);
+    List<SimpleRoomDTO> findByBranchIdAndState(Long branchId, RoomState state);
+    List<SimpleRoomDTO> findByRoomTypeAndPriceRange(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice);
+    List<SimpleRoomDTO> findByBranchIdAndRoomTypeAndPriceRange(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice);
 
-    List<RoomResponse> getRoomsWithBookings();
+    //With photo
+    List<RoomDetailsDTO> getAllRoomsWithPhoto();
+    Optional<RoomDetailsDTO> findByRoomNumberWithPhoto(String roomNumber);
+    List<RoomDetailsDTO> getRoomsByBranchIdWithPhoto(Long branchId);
 
-    List<RoomResponse> getRoomsWithBookingsByBranch(Long branchId);
+    List<RoomDetailsDTO> findByBranchIdAndStateWithPhoto(Long branchId, RoomState state);
+    List<RoomDetailsDTO> findByRoomTypeAndPriceRangeWithPhoto(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice);
+    List<RoomDetailsDTO> findByBranchIdAndRoomTypeAndPriceRangeWithPhoto(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice);
+
+    RoomDetailsDTO addNewRoom(AddNewRoomRequest request);
+    RoomDetailsDTO updateRoom(Long roomId, RoomUpdateRequest roomUpdateRequest);
+    void deleteRoomById(Long id);
+
+//    List<RoomResponse> getRoomsWithBookings();
+//    List<RoomResponse> getRoomsWithBookingsByBranch(Long branchId);
 }

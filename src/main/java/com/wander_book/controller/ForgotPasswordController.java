@@ -1,10 +1,11 @@
 package com.wander_book.controller;
 
-import com.wander_book.model.auth.ForgotPassword;
+import com.wander_book.dto.response.UserResponseDTO;
+import com.wander_book.model.user.ForgotPassword;
 import com.wander_book.model.user.User;
 import com.wander_book.repository.ForgotPasswordRepository;
-import com.wander_book.request.auth.ResetPasswordRequest;
-import com.wander_book.response.MailBody;
+import com.wander_book.dto.request.auth.ResetPasswordRequest;
+import com.wander_book.dto.response.MailBody;
 import com.wander_book.service.IEmailService;
 import com.wander_book.service.IUserService;
 import lombok.RequiredArgsConstructor;

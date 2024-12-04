@@ -1,4 +1,4 @@
-package com.wander_book.request.service;
+package com.wander_book.dto.request.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

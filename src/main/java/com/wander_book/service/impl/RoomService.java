@@ -1,31 +1,28 @@
 package com.wander_book.service.impl;
 
+import com.wander_book.dto.request.room.AddNewRoomRequest;
+import com.wander_book.dto.request.room.RoomDetailsDTO;
+import com.wander_book.dto.request.room.SimpleRoomDTO;
 import com.wander_book.mapper.RoomMapper;
-import com.wander_book.model.Branch;
+import com.wander_book.model.branch.Branch;
 import com.wander_book.model.room.Room;
-import com.wander_book.model.room.RoomAvailability;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
 import com.wander_book.repository.BranchRepository;
 import com.wander_book.repository.RoomAvailabilityRepository;
 import com.wander_book.repository.RoomRepository;
-import com.wander_book.request.room.AddNewRoomRequest;
-import com.wander_book.request.room.RoomUpdateRequest;
-import com.wander_book.response.RoomResponse;
+import com.wander_book.dto.request.room.RoomUpdateRequest;
 import com.wander_book.service.Common.BaseServiceImpl;
+import com.wander_book.service.Common.Utility;
 import com.wander_book.service.IBranchService;
 import com.wander_book.service.IRoomService;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.wander_book.service.Common.Utility.updateIfNotNull;
 
 @Service
 public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
@@ -47,34 +44,23 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     }
 
     @Override
-    public Optional<Room> findByRoomNumber(String roomNumber) {
-        return roomRepository.findByRoomNumber(roomNumber);
+    public List<SimpleRoomDTO> getAllRooms() {
+        return roomRepository.findAll()
+                .stream()
+                .map(roomMapper::toSimpleRoomDTO)
+                .toList();
     }
 
     @Override
-    public List<Room> findByState(RoomState state) {
-        return roomRepository.findByState(state);
+    public Optional<SimpleRoomDTO> findByRoomId(long id) {
+        return roomRepository.findById(id)
+                .map(roomMapper::toSimpleRoomDTO);
     }
 
     @Override
-    public List<Room> findByBranch(Long branchId) {
-        Branch branch = branchRepository.findById(branchId).orElseThrow(() -> new EntityNotFoundException("Branch not found with id: " + branchId));
-        return roomRepository.findByBranch(branch);
-    }
-
-    @Override
-    public List<Room> findByBranchIdAndState(Long branchId, RoomState state) {
-        return roomRepository.findByBranch_IdAndState(branchId, state);
-    }
-
-    @Override
-    public List<Room> findByRoomTypeAndPricePerNightBetween(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
-        return roomRepository.findByRoomTypeAndPricePerNightBetween(roomType, minPrice, maxPrice);
-    }
-
-    @Override
-    public List<Room> findByBranchIdAndRoomTypeAndPricePerNightBetween(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
-        return roomRepository.findByBranch_IdAndRoomTypeAndPricePerNightBetween(branchId, roomType, minPrice, maxPrice);
+    public Optional<SimpleRoomDTO> findByRoomNumber(String roomNumber) {
+        return roomRepository.findByRoomNumber(roomNumber)
+                .map(roomMapper::toSimpleRoomDTO);
     }
 
     @Override
@@ -82,73 +68,181 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
         return roomRepository.existsByRoomNumber(roomNumber);
     }
 
-    public Room addNewRoom(AddNewRoomRequest request) {
+    @Override
+    public List<SimpleRoomDTO> findByState(RoomState state) {
+        return roomRepository.findByState(state)
+                .stream()
+                .map(roomMapper::toSimpleRoomDTO)
+                .toList();
+    }
+
+    @Override
+    public List<SimpleRoomDTO> findByBranchIdAndState(Long branchId, RoomState state) {
+        return roomRepository.findByBranchIdAndState(branchId, state)
+                .stream()
+                .map(roomMapper::toSimpleRoomDTO)
+                .toList();
+    }
+
+    @Override
+    public List<SimpleRoomDTO> findByRoomTypeAndPriceRange(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
+        return roomRepository.findByRoomTypeAndPriceRange(roomType, minPrice, maxPrice)
+                .stream()
+                .map(roomMapper::toSimpleRoomDTO)
+                .toList();
+    }
+
+    @Override
+    public List<SimpleRoomDTO> findByBranchIdAndRoomTypeAndPriceRange(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
+        return roomRepository.findByBranchIdAndRoomTypeAndPriceRange(branchId, roomType, minPrice, maxPrice)
+                .stream()
+                .map(roomMapper::toSimpleRoomDTO)
+                .toList();
+    }
+
+    @Override
+    public List<RoomDetailsDTO> getAllRoomsWithPhoto() {
+        return roomRepository.findAll()
+                .stream()
+                .map(roomMapper::toRoomDetailsDTO)
+                .toList();
+    }
+
+    @Override
+    public Optional<RoomDetailsDTO> findByRoomNumberWithPhoto(String roomNumber) {
+        return roomRepository.findByRoomNumber(roomNumber)
+                .map(roomMapper::toRoomDetailsDTO);
+    }
+
+    @Override
+    public List<RoomDetailsDTO> getRoomsByBranchIdWithPhoto(Long branchId) {
+        return roomRepository.findByBranchIdAndState(branchId, RoomState.OPEN)
+                .stream()
+                .map(roomMapper::toRoomDetailsDTO)
+                .toList();
+    }
+
+    @Override
+    public List<RoomDetailsDTO> findByBranchIdAndStateWithPhoto(Long branchId, RoomState state) {
+        return roomRepository.findByBranchIdAndState(branchId, state)
+                .stream()
+                .map(roomMapper::toRoomDetailsDTO)
+                .toList();
+    }
+
+    @Override
+    public List<RoomDetailsDTO> findByRoomTypeAndPriceRangeWithPhoto(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
+        return roomRepository.findByRoomTypeAndPriceRange(roomType, minPrice, maxPrice)
+                .stream()
+                .map(roomMapper::toRoomDetailsDTO)
+                .toList();
+    }
+
+    @Override
+    public List<RoomDetailsDTO> findByBranchIdAndRoomTypeAndPriceRangeWithPhoto(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
+        return roomRepository.findByBranchIdAndRoomTypeAndPriceRange(branchId, roomType, minPrice, maxPrice)
+                .stream()
+                .map(roomMapper::toRoomDetailsDTO)
+                .toList();
+    }
+
+    @Override
+    public RoomDetailsDTO addNewRoom(AddNewRoomRequest request) {
         Branch branch = branchService.findById(request.getBranchId())
                 .orElseThrow(() -> new IllegalArgumentException("Branch not found with ID: " + request.getBranchId()));
-
-        Room room = new Room(branch,
-                request.getRoomNumber(),
-                request.getRoomType(),
-                request.getPricePerNight(),
-                RoomState.OPEN,
-                request.getMaxOccupancy());
-
-        // Only set description and photo if they are not null
-        if (request.getDescription() != null) {
-            room.setDescription(request.getDescription());
-        }
-        if (request.getPhoto() != null) {
-            room.setPhoto(request.getPhoto());
+        boolean exists = roomRepository.existsByRoomNumberAndBranchId(request.getRoomNumber(), request.getBranchId());
+        if (exists) {
+            throw new IllegalArgumentException("Room with number " + request.getRoomNumber() + " already exists in the branch with ID: " + request.getBranchId());
         }
 
-        return roomRepository.save(room);
+        Room room = roomMapper.toRoom(request, branch);
+        Room savedRoom = roomRepository.save(room);
+
+        return roomMapper.toRoomDetailsDTO(savedRoom);
     }
 
-    @Override
-    @Transactional
-    public Room updateRoom(Long roomId, RoomUpdateRequest roomUpdateRequest) {
-        Room room = roomRepository.findById(roomId)
+   @Override
+    public RoomDetailsDTO updateRoom(Long roomId, RoomUpdateRequest roomUpdateRequest) {
+        // Find the existing room
+        Room existingRoom = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with ID: " + roomId));
 
-        // Update only non-null fields from the request
-        updateIfNotNull(roomUpdateRequest.getRoomNumber(), room::setRoomNumber);
-        updateIfNotNull(roomUpdateRequest.getRoomType(), room::setRoomType);
-        updateIfNotNull(roomUpdateRequest.getPricePerNight(), room::setPricePerNight);
-        updateIfNotNull(roomUpdateRequest.getMaxOccupancy(), room::setMaxOccupancy);
-        updateIfNotNull(roomUpdateRequest.getDescription(), room::setDescription);
-        updateIfNotNull(roomUpdateRequest.getState(), room::setState);
-        updateIfNotNull(roomUpdateRequest.getPhoto(), room::setPhoto);
+        // Check for duplicate room number in the same branch
+        if (roomUpdateRequest.getRoomNumber() != null &&
+                !roomUpdateRequest.getRoomNumber().equals(existingRoom.getRoomNumber())) {
+            boolean roomNumberExists = roomRepository.existsByBranch_IdAndRoomNumber(
+                    existingRoom.getBranch().getId(), roomUpdateRequest.getRoomNumber());
+            if (roomNumberExists) {
+                throw new IllegalArgumentException("Room number already exists in this branch");
+            }
+        }
 
-        return roomRepository.save(room);
+        // Update the fields using the Utility class
+        Utility.updateIfNotNull(roomUpdateRequest.getRoomNumber(), existingRoom::setRoomNumber);
+        Utility.updateIfNotNull(roomUpdateRequest.getRoomType(), existingRoom::setRoomType);
+        Utility.updateIfNotNull(roomUpdateRequest.getPricePerNight(), existingRoom::setPricePerNight);
+        Utility.updateIfNotNull(roomUpdateRequest.getMaxOccupancy(), existingRoom::setMaxOccupancy);
+        Utility.updateIfNotNull(roomUpdateRequest.getDescription(), existingRoom::setDescription);
+
+        // Decode and update photo if provided
+        if (roomUpdateRequest.getPhoto() != null) {
+            existingRoom.setPhoto(Base64.getDecoder().decode(roomUpdateRequest.getPhoto()));
+        }
+
+        // Save the updated room
+        Room updatedRoom = roomRepository.save(existingRoom);
+
+        // Convert to DTO and return
+        return roomMapper.toRoomDetailsDTO(updatedRoom);
     }
 
     @Override
-    public List<RoomResponse> getRoomsWithBookings() {
-        List<Room> rooms = roomRepository.findAll();
-        Long currentTimestamp = System.currentTimeMillis();
-
-        // Load future bookings for all rooms
-        rooms.forEach(room -> {
-            List<RoomAvailability> futureBookings = roomAvailabilityRepository.findFutureBookingsByRoom(room, currentTimestamp);
-            room.setFutureBookings(futureBookings);
-        });
-
-        return rooms.stream().map(roomMapper::toDto).collect(Collectors.toList());
+    public void deleteRoomById(Long id) {
+        Room room = roomRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found with ID: " + id));
+        roomRepository.softDelete(room);
     }
 
-    @Override
-    public List<RoomResponse> getRoomsWithBookingsByBranch(Long branchId) {
-        Branch branch = branchService.findById(branchId)
-                .orElseThrow(() -> new IllegalArgumentException("Branch not found with ID: " + branchId));
-        List<Room> rooms = roomRepository.findByBranch(branch);
-        Long currentTimestamp = System.currentTimeMillis();
-
-        // Load future bookings for all rooms in the branch
-        rooms.forEach(room -> {
-            List<RoomAvailability> futureBookings = roomAvailabilityRepository.findFutureBookingsByRoom(room, currentTimestamp);
-            room.setFutureBookings(futureBookings);
-        });
-
-        return rooms.stream().map(roomMapper::toDto).collect(Collectors.toList());
+    // Methods for description and photo
+    public String getRoomDescription(Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + roomId));
+        return room.getDescription();
     }
+
+    public byte[] getRoomPhoto(Long roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found with id: " + roomId));
+        return room.getPhoto();
+    }
+
+//    @Override
+//    public List<RoomResponse> getRoomsWithBookings() {
+//        List<Room> rooms = roomRepository.findAll();
+//        Long currentTimestamp = System.currentTimeMillis();
+//
+//        // Load future bookings for all rooms
+//        rooms.forEach(room -> {
+//            List<RoomAvailability> futureBookings = roomAvailabilityRepository.findFutureBookingsByRoom(room, currentTimestamp);
+//            room.setFutureBookings(futureBookings);
+//        });
+//
+//        return rooms.stream().map(roomMapper::toDto).collect(Collectors.toList());
+//    }
+
+//    @Override
+//    public List<RoomResponse> getRoomsWithBookingsByBranch(Long branchId) {
+//        Branch branch = branchService.findById(branchId)
+//                .orElseThrow(() -> new IllegalArgumentException("Branch not found with ID: " + branchId));
+//        List<Room> rooms = roomRepository.findByBranch(branch);
+//        Long currentTimestamp = System.currentTimeMillis();
+//
+//        // Load future bookings for all rooms in the branch
+//        rooms.forEach(room -> {
+//            List<RoomAvailability> futureBookings = roomAvailabilityRepository.findFutureBookingsByRoom(room, currentTimestamp);
+//            room.setFutureBookings(futureBookings);
+//        });
+//
+//        return rooms.stream().map(roomMapper::toDto).collect(Collectors.toList());
+//    }
 }

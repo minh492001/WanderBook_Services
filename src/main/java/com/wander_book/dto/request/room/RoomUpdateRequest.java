@@ -1,4 +1,4 @@
-package com.wander_book.request.room;
+package com.wander_book.dto.request.room;
 
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
@@ -15,5 +15,5 @@ public class RoomUpdateRequest {
     private Integer maxOccupancy;
     private String description;
     private RoomState state;
-    private Blob photo;
+    private byte[] photo;
 }

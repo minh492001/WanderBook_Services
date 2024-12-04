@@ -74,9 +74,9 @@ public class Booking extends BaseEntity {
         this.notes = notes;
         this.status = BookingStatus.PENDING;
         setConfirmationCode();
-        if (room != null) {
-            room.setBookRoom(); // Set the room status to "Booked"
-        }
+//        if (room != null) {
+//            room.setBookRoom(); // Set the room status to "Booked"
+//        }
     }
 
     @PostConstruct
@@ -87,9 +87,9 @@ public class Booking extends BaseEntity {
             this.status = BookingStatus.PENDING;
         }
         setConfirmationCode();
-        if (this.room != null) {
-            this.room.setBookRoom(); // Set room status to "Booked"
-        }
+//        if (this.room != null) {
+//            this.room.setBookRoom(); // Set room status to "Booked"
+//        }
     }
 
     public void updateGuestCount(int newAdultsCount, int newChildrenCount) {

@@ -1,16 +1,16 @@
 package com.wander_book.mapper;
 
-import com.wander_book.model.Branch;
-import com.wander_book.request.branch.BranchDTO;
-import com.wander_book.request.room.SimpleRoomDTO;
-import com.wander_book.request.service.SimpleServiceDTO;
+import com.wander_book.model.branch.Branch;
+import com.wander_book.dto.request.branch.BranchDTO;
+import com.wander_book.dto.request.room.SuperSimpleRoomDTO;
+import com.wander_book.dto.request.service.SimpleServiceDTO;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 @Component
 public class BranchMapper {
-    public BranchDTO toBranchDTO(Branch branch) {
+    public BranchDTO toBranchSimpleDTO(Branch branch) {
         BranchDTO branchDTO = new BranchDTO();
         branchDTO.setId(branch.getId());
         branchDTO.setBranchName(branch.getBranchName());
@@ -18,10 +18,12 @@ public class BranchMapper {
         branchDTO.setAddress(branch.getAddress());
 
         branchDTO.setRooms(branch.getRooms().stream()
-                .map(room -> new SimpleRoomDTO(room.getId(), room.getRoomNumber())).collect(Collectors.toList()));
+                .map(room -> new SuperSimpleRoomDTO(room.getId(), room.getRoomNumber()))
+                .collect(Collectors.toList()));
 
         branchDTO.setServices(branch.getServiceProvides().stream()
-                .map(service -> new SimpleServiceDTO(service.getId(), service.getServiceName())).collect(Collectors.toList()));
+                .map(service -> new SimpleServiceDTO(service.getId(), service.getServiceName()))
+                .collect(Collectors.toList()));
 
         return branchDTO;
     }

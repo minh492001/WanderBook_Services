@@ -1,6 +1,5 @@
-package com.wander_book.model.auth;
+package com.wander_book.model.user;
 
-import com.wander_book.model.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

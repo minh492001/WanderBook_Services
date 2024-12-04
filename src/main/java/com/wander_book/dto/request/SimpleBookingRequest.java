@@ -1,4 +1,4 @@
-package com.wander_book.request;
+package com.wander_book.dto.request;
 
 import com.wander_book.model.booking.BookingStatus;
 import lombok.AllArgsConstructor;

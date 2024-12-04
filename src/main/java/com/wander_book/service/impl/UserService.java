@@ -1,33 +1,41 @@
 package com.wander_book.service.impl;
 
+import com.wander_book.dto.response.UserResponseDTO;
 import com.wander_book.exception.auth.UserAlreadyExistsException;
+import com.wander_book.mapper.UserMapper;
 import com.wander_book.model.user.User;
 import com.wander_book.model.user.Roles;
 import com.wander_book.repository.UserRepository;
-import com.wander_book.request.auth.RegisterRequest;
-import com.wander_book.request.auth.ResetPasswordRequest;
-import com.wander_book.request.user.editUserRequest;
+import com.wander_book.dto.request.auth.RegisterRequest;
+import com.wander_book.dto.request.auth.ResetPasswordRequest;
+import com.wander_book.dto.request.user.editUserRequest;
 import com.wander_book.service.Common.BaseServiceImpl;
+import com.wander_book.service.Common.Utility;
 import com.wander_book.service.IUserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService extends BaseServiceImpl<User> implements IUserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
         this.repository = userRepository;  // Initialize the inherited repository field
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -35,50 +43,64 @@ public class UserService extends BaseServiceImpl<User> implements IUserService {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             throw new UserAlreadyExistsException(registerRequest.getEmail() + " already exists");
         }
-        // Create a new user entity
-        User newUser = new User(
-                registerRequest.getFullName(),
-                registerRequest.getEmail(),
-                passwordEncoder.encode(registerRequest.getPassword()),
-                registerRequest.getAddress(),
-                registerRequest.getPhoneNo(),
-                registerRequest.getDateOfBirth(),
-                Roles.USER
-        );
+
+        User newUser = User.builder()
+                .fullName(registerRequest.getFullName())
+                .email(registerRequest.getEmail())
+                .password(passwordEncoder.encode(registerRequest.getPassword()))
+                .address(registerRequest.getAddress())
+                .phoneNo(registerRequest.getPhoneNo())
+                .dateOfBirth(registerRequest.getDateOfBirth())
+                .role(Roles.USER)
+                .build();
+
         userRepository.save(newUser);
     }
 
     @Override
+    public Optional<UserResponseDTO> findByEmailSimple(String email) {
+        return userRepository.findByEmail(email)
+                .map(userMapper::toDTO);
+    }
+
+    @Override
     public Optional<User> findByEmail(String email) {
-        // Find a user by email
         return userRepository.findByEmail(email);
     }
 
     @Override
     public void deleteByEmail(String email) {
-        // Soft delete a user by email
-        userRepository.findByEmail(email).ifPresent(userRepository::softDelete);
+        User user = userRepository.findByEmailAndDeletedAtIsNull(email)
+                .orElseThrow(() -> new EntityNotFoundException("User with email: " + email + " not found or already deleted!"));
+        userRepository.delete(user);
     }
 
     @Override
     public void deleteById(Long id) {
-        // Soft delete a user by ID
-        userRepository.findById(id).ifPresent(userRepository::softDelete);
+        User user = userRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new EntityNotFoundException("User with id: " + id + " not found or already deleted!"));
+        userRepository.delete(user);
     }
 
     @Override
-    public User updateUser(Long id, editUserRequest updatedUser) {
+    public UserResponseDTO updateUser(Long id, editUserRequest updatedUser) {
         return userRepository.findByIdAndDeletedAtIsNull(id).map(existingUser -> {
-            if (updatedUser.getFullName() != null) existingUser.setFullName(updatedUser.getFullName());
-            if (updatedUser.getEmail() != null) existingUser.setEmail(updatedUser.getEmail());
-            if (updatedUser.getAddress() != null) existingUser.setAddress(updatedUser.getAddress());
-            if (updatedUser.getPhoneNo() != null) existingUser.setPhoneNo(updatedUser.getPhoneNo());
-            if (updatedUser.getDateOfBirth() != null) existingUser.setDateOfBirth(updatedUser.getDateOfBirth());
-            if (updatedUser.getPassword() != null)
-                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword())); // Encode the new password
-            return userRepository.save(existingUser);
+            Utility.updateIfNotNull(updatedUser.getFullName(), existingUser::setFullName);
+            Utility.updateIfNotNull(updatedUser.getEmail(), existingUser::setEmail);
+            Utility.updateIfNotNull(updatedUser.getAddress(), existingUser::setAddress);
+            Utility.updateIfNotNull(updatedUser.getPhoneNo(), existingUser::setPhoneNo);
+            Utility.updateIfNotNull(updatedUser.getDateOfBirth(), existingUser::setDateOfBirth);
+
+            if (updatedUser.getPassword() != null) {
+                existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+            }
+
+            User savedUser = userRepository.save(existingUser);
+
+            return userMapper.toDTO(savedUser);
         }).orElseThrow(() -> new IllegalArgumentException("User not found or has been deleted"));
     }
+
     @Override
     public void resetPassword(String email, ResetPasswordRequest resetPasswordRequest) {
         User existingUser = userRepository.findByEmail(email)
@@ -91,12 +113,12 @@ public class UserService extends BaseServiceImpl<User> implements IUserService {
         existingUser.setPassword(passwordEncoder.encode(resetPasswordRequest.newPassword()));
         userRepository.save(existingUser);
     }
-//    @Override
-//    public long countUsersByAge(int age) {
-//        // Count users by age (assuming age is calculated based on dateOfBirth)
-//        long currentTime = System.currentTimeMillis();
-//        long ageInMillis = age * 365L * 24 * 60 * 60 * 1000;
-//        long ageThreshold = currentTime - ageInMillis;
-//        return userRepository.countByDateOfBirthLessThan(ageThreshold);
-//    }
+
+    @Override
+    public List<UserResponseDTO> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(userMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

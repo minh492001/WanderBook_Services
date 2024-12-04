@@ -21,7 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
-//@ComponentScan(basePackages = {"com.wander_book"}) //annotation is generally not needed unless you're trying to scan packages outside the default scope.
 public class WebSecurityConfig {
     private final HotelUserDetailsService userDetailsService;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
@@ -56,9 +55,13 @@ public class WebSecurityConfig {
                         exception -> exception.authenticationEntryPoint(jwtAuthEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v2/auth/**", "/api/v2/forgot-password/**","/api/v2/branches/**","/api/v2/enums/**")
+                        .requestMatchers(
+                                "/api/v2/auth/**",
+                                "/api/v2/forgot-password/**",
+                                "/api/v2/branches/**",
+                                "/api/v2/rooms/**",
+                                "/api/v2/enums/**")
                         .permitAll()
-//                        .requestMatchers("/api/v2/role/**").hasRole("ADMIN")
                         .anyRequest().authenticated());
 
         http.authenticationProvider(authenticationProvider());

@@ -1,32 +1,30 @@
 package com.wander_book.service;
 
-import com.wander_book.model.Branch;
-import com.wander_book.model.room.Room;
-import com.wander_book.request.branch.BranchDTO;
-import com.wander_book.request.branch.BranchNameDTO;
+import com.wander_book.dto.request.branch.CreateBranchRequest;
+import com.wander_book.dto.request.branch.UpdateBranchRequest;
+import com.wander_book.model.branch.Branch;
+import com.wander_book.dto.request.branch.BranchDTO;
+import com.wander_book.dto.request.branch.BranchNameDTO;
 import com.wander_book.service.Common.IBaseService;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IBranchService extends IBaseService<Branch> {
-    Optional<Branch> findByName(String branchName);
 
     List<BranchDTO> getAllBranches();
 
+    List<BranchNameDTO> getAllBranchNames();
+
     BranchDTO getBranchById(Long id);
 
-    boolean existsByName(String branchName);
-
-    List<Branch> findByCity(String city);
-
-    List<Room> getRoomsByBranchId(Long branchId);
+    List<BranchDTO> getBranchesByCity(String city);
 
     void deleteBranchById(Long id);
 
-    void addServiceToBranch(Long branchId, Long serviceId);
+    BranchDTO addBranch(CreateBranchRequest createBranchRequest);
 
-    void removeServiceFromBranch(Long branchId, Long serviceId);
-
-    List<BranchNameDTO> getAllBranchNames();
+    BranchDTO updateBranch(Long id, UpdateBranchRequest updateBranchRequest);
+//    void addServiceToBranch(Long branchId, Long serviceId);
+//
+//    void removeServiceFromBranch(Long branchId, Long serviceId);
 }

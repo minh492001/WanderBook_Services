@@ -2,7 +2,7 @@ package com.wander_book.service.impl;
 
 import com.wander_book.model.service_provide.ServiceProvide;
 import com.wander_book.repository.ServiceProvideRepository;
-import com.wander_book.request.service.SimpleService;
+import com.wander_book.dto.request.service.SimpleService;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IServiceProvideService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class ServiceProvideService extends BaseServiceImpl<ServiceProvide> imple
 
     @Override
     public ServiceProvide saveService(Long id, SimpleService updateService) {
-        return serviceProvideRepository.findByIdAndNotSoftDeleted(id).map(existingService -> {
+        return serviceProvideRepository.findByIdAndDeletedAtIsNull(id).map(existingService -> {
             if (updateService.getServiceName() != null) existingService.setServiceName(updateService.getServiceName());
             if (updateService.getDescription() != null) existingService.setDescription(updateService.getDescription());
             if (updateService.getPrice() != null) existingService.setPrice(updateService.getPrice());

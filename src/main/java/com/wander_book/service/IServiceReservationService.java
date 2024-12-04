@@ -15,5 +15,4 @@ public interface IServiceReservationService extends IBaseService<ServiceReservat
     BigDecimal getTotalPriceByBooking(Long bookingId);
 
     void deleteServiceReservation(Long serviceReservationId);
-
 }
