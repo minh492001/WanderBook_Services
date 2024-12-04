@@ -1,6 +1,5 @@
 package com.wander_book.controller;
 
-import com.wander_book.dto.response.UserResponseDTO;
 import com.wander_book.model.user.ForgotPassword;
 import com.wander_book.model.user.User;
 import com.wander_book.repository.ForgotPasswordRepository;
