@@ -51,6 +51,16 @@ public class RoomMapper {
     }
 
     public RoomDetailsDTO toRoomDetailsDTO(Room room) {
+        String encodedPhoto = null;
+
+        if (room.getPhoto() != null) {
+            try {
+                encodedPhoto = Base64.getEncoder().encodeToString(room.getPhoto());
+            } catch (IllegalArgumentException e) {
+                encodedPhoto = null;
+            }
+        }
+
         return RoomDetailsDTO.builder()
                 .id(room.getId())
                 .roomNumber(room.getRoomNumber())
@@ -60,18 +70,28 @@ public class RoomMapper {
                 .maxOccupancy(room.getMaxOccupancy())
                 .branchId(room.getBranch() != null ? room.getBranch().getId() : null)
                 .description(room.getDescription())
-                .photo(room.getPhoto() != null ? Base64.getEncoder().encodeToString(room.getPhoto()) : null) // Encode photo
+                .photo(encodedPhoto)
                 .build();
     }
 
     public Room toRoom(AddNewRoomRequest dto, Branch branch) {
+        byte[] decodedPhoto = null;
+
+        if (dto.getPhoto() != null) {
+            try {
+                decodedPhoto = Base64.getDecoder().decode(dto.getPhoto());
+            } catch (IllegalArgumentException e) {
+                decodedPhoto = null;
+            }
+        }
+
         return Room.builder()
                 .roomNumber(dto.getRoomNumber())
                 .roomType(dto.getRoomType())
                 .pricePerNight(dto.getPricePerNight())
                 .maxOccupancy(dto.getMaxOccupancy())
                 .description(dto.getDescription())
-                .photo(dto.getPhoto() != null ? Base64.getDecoder().decode(dto.getPhoto()) : null) // Decode photo
+                .photo(decodedPhoto)
                 .state(RoomState.OPEN)
                 .branch(branch)
                 .build();

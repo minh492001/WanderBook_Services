@@ -2,7 +2,6 @@ package com.wander_book.controller;
 
 import com.wander_book.dto.request.room.RoomDetailsDTO;
 import com.wander_book.dto.request.room.SimpleRoomDTO;
-import com.wander_book.model.room.Room;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
 import com.wander_book.dto.request.room.AddNewRoomRequest;
@@ -11,7 +10,6 @@ import com.wander_book.service.IRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;

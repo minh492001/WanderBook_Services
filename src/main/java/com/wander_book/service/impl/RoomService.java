@@ -18,6 +18,7 @@ import com.wander_book.service.IBranchService;
 import com.wander_book.service.IRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Base64;
@@ -44,6 +45,7 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SimpleRoomDTO> getAllRooms() {
         return roomRepository.findAll()
                 .stream()
@@ -52,23 +54,27 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<SimpleRoomDTO> findByRoomId(long id) {
         return roomRepository.findById(id)
                 .map(roomMapper::toSimpleRoomDTO);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<SimpleRoomDTO> findByRoomNumber(String roomNumber) {
         return roomRepository.findByRoomNumber(roomNumber)
                 .map(roomMapper::toSimpleRoomDTO);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsByRoomNumber(String roomNumber) {
         return roomRepository.existsByRoomNumber(roomNumber);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SimpleRoomDTO> findByState(RoomState state) {
         return roomRepository.findByState(state)
                 .stream()
@@ -77,6 +83,7 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SimpleRoomDTO> findByBranchIdAndState(Long branchId, RoomState state) {
         return roomRepository.findByBranchIdAndState(branchId, state)
                 .stream()
@@ -85,6 +92,7 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SimpleRoomDTO> findByRoomTypeAndPriceRange(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
         return roomRepository.findByRoomTypeAndPriceRange(roomType, minPrice, maxPrice)
                 .stream()
@@ -93,6 +101,7 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<SimpleRoomDTO> findByBranchIdAndRoomTypeAndPriceRange(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
         return roomRepository.findByBranchIdAndRoomTypeAndPriceRange(branchId, roomType, minPrice, maxPrice)
                 .stream()
@@ -101,6 +110,7 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<RoomDetailsDTO> getAllRoomsWithPhoto() {
         return roomRepository.findAll()
                 .stream()
@@ -109,12 +119,14 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<RoomDetailsDTO> findByRoomNumberWithPhoto(String roomNumber) {
         return roomRepository.findByRoomNumber(roomNumber)
                 .map(roomMapper::toRoomDetailsDTO);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<RoomDetailsDTO> getRoomsByBranchIdWithPhoto(Long branchId) {
         return roomRepository.findByBranchIdAndState(branchId, RoomState.OPEN)
                 .stream()
@@ -123,6 +135,7 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<RoomDetailsDTO> findByBranchIdAndStateWithPhoto(Long branchId, RoomState state) {
         return roomRepository.findByBranchIdAndState(branchId, state)
                 .stream()
@@ -131,6 +144,7 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<RoomDetailsDTO> findByRoomTypeAndPriceRangeWithPhoto(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
         return roomRepository.findByRoomTypeAndPriceRange(roomType, minPrice, maxPrice)
                 .stream()
@@ -139,6 +153,7 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<RoomDetailsDTO> findByBranchIdAndRoomTypeAndPriceRangeWithPhoto(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
         return roomRepository.findByBranchIdAndRoomTypeAndPriceRange(branchId, roomType, minPrice, maxPrice)
                 .stream()
