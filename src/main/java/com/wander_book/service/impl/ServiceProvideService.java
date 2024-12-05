@@ -5,14 +5,13 @@ import com.wander_book.dto.request.service.SimpleServiceDTO;
 import com.wander_book.mapper.ServiceProvideMapper;
 import com.wander_book.model.service_provide.ServiceProvide;
 import com.wander_book.repository.ServiceProvideRepository;
-import com.wander_book.dto.request.service.ServiceProvideResponseDTO;
+import com.wander_book.dto.response.ServiceProvideResponseDTO;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IServiceProvideService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

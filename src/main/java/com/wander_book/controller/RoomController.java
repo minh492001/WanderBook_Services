@@ -2,6 +2,7 @@ package com.wander_book.controller;
 
 import com.wander_book.dto.request.room.RoomDetailsDTO;
 import com.wander_book.dto.request.room.SimpleRoomDTO;
+import com.wander_book.dto.response.RoomResponse;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
 import com.wander_book.dto.request.room.AddNewRoomRequest;
@@ -152,16 +153,4 @@ public class RoomController {
         roomService.deleteRoomById(id);
         return ResponseEntity.ok("Room soft-deleted successfully.");
     }
-
-//    @GetMapping("/all")
-//    public ResponseEntity<List<RoomResponse>> getAllRoomsWithFutureBookings() {
-//        List<RoomResponse> rooms = roomService.getRoomsWithBookings();
-//        return ResponseEntity.ok(rooms);
-//    }
-//
-//    @GetMapping("/branch/{branchId}")
-//    public ResponseEntity<List<RoomResponse>> getRoomsWithBookingsByBranch(@PathVariable Long branchId) {
-//        List<RoomResponse> rooms = roomService.getRoomsWithBookingsByBranch(branchId);
-//        return ResponseEntity.ok(rooms);
-//    }
 }

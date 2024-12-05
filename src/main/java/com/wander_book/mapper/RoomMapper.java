@@ -9,7 +9,6 @@ import com.wander_book.dto.response.RoomResponse;
 import com.wander_book.model.room.RoomState;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +46,11 @@ public class RoomMapper {
                 .state(room.getState())
                 .maxOccupancy(room.getMaxOccupancy())
                 .branchName(room.getBranch().getBranchName())
+                .availabilities(room.getFutureBookings() != null
+                        ? room.getFutureBookings().stream()
+                        .map(roomAvailabilityMapper::toDto)
+                        .collect(Collectors.toList())
+                        : List.of())
                 .build();
     }
 
@@ -71,6 +75,11 @@ public class RoomMapper {
                 .branchId(room.getBranch() != null ? room.getBranch().getId() : null)
                 .description(room.getDescription())
                 .photo(encodedPhoto)
+                .availabilities(room.getFutureBookings() != null
+                        ? room.getFutureBookings().stream()
+                        .map(roomAvailabilityMapper::toDto)
+                        .collect(Collectors.toList())
+                        : List.of())
                 .build();
     }
 

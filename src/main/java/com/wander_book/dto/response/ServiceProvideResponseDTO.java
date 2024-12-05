@@ -1,4 +1,4 @@
-package com.wander_book.dto.request.service;
+package com.wander_book.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

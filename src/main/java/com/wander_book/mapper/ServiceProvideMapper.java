@@ -1,7 +1,7 @@
 package com.wander_book.mapper;
 
 import com.wander_book.dto.request.service.ServiceProvideRequestDTO;
-import com.wander_book.dto.request.service.ServiceProvideResponseDTO;
+import com.wander_book.dto.response.ServiceProvideResponseDTO;
 import com.wander_book.dto.request.service.SimpleServiceDTO;
 import com.wander_book.model.service_provide.ServiceProvide;
 import org.springframework.stereotype.Component;

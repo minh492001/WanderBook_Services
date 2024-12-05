@@ -2,10 +2,11 @@ package com.wander_book.model.booking;
 
 import com.wander_book.model.comon.BaseEntity;
 import com.wander_book.model.room.Room;
+import com.wander_book.model.room.RoomState;
 import com.wander_book.model.service_provide.ServiceReservation;
 import com.wander_book.model.user.User;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -23,16 +24,20 @@ public class Booking extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; // The user who created the booking
+    @ToString.Exclude
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
-    private Room room; // The room that is being booked
+    @ToString.Exclude
+    private Room room;
 
     @Column(nullable = false)
+    @NotNull(message = "Check-in timestamp must not be null")
     private Long checkInTimestamp; // Check-in time stored as a UNIX timestamp (in milliseconds)
 
     @Column(nullable = false)
+    @NotNull(message = "Check-out timestamp must not be null")
     private Long checkOutTimestamp; // Check-out time stored as a UNIX timestamp (in milliseconds)
 
     @Column(nullable = false)
@@ -56,40 +61,32 @@ public class Booking extends BaseEntity {
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ServiceReservation> bookingServices = new ArrayList<>();
 
-    public Booking(User user,
-                   Room room,
-                   Long checkInTimestamp,
-                   Long checkOutTimestamp,
-                   int adultsCount,
-                   int childrenCount,
-                   String notes) {
-        super();
-        this.user = user;
-        this.room = room;
-        this.checkInTimestamp = checkInTimestamp;
-        this.checkOutTimestamp = checkOutTimestamp;
-        this.adultsCount = adultsCount;
-        this.childrenCount = childrenCount;
-        this.totalGuests = adultsCount + childrenCount;
-        this.notes = notes;
-        this.status = BookingStatus.PENDING;
-        setConfirmationCode();
-//        if (room != null) {
-//            room.setBookRoom(); // Set the room status to "Booked"
-//        }
-    }
-
-    @PostConstruct
-    public void initializeBooking() {
-        this.onCreate();
+    @Override
+    protected void beforePersist() {
         this.totalGuests = this.adultsCount + this.childrenCount;
         if (this.status == null) {
             this.status = BookingStatus.PENDING;
         }
-        setConfirmationCode();
-//        if (this.room != null) {
-//            this.room.setBookRoom(); // Set room status to "Booked"
-//        }
+        if (this.confirmationCode == null) {
+            this.confirmationCode = RandomStringUtils.randomNumeric(10);
+        }
+        if (this.room != null) {
+            this.room.changeState(RoomState.BOOKED);
+        }
+    }
+
+    @Override
+    protected void beforeUpdate() {
+        validateTimestamps();
+    }
+
+    private void validateTimestamps() {
+        if (this.checkInTimestamp == null || this.checkOutTimestamp == null) {
+            throw new IllegalArgumentException("Check-in and Check-out timestamps must not be null.");
+        }
+        if (this.checkInTimestamp >= this.checkOutTimestamp) {
+            throw new IllegalArgumentException("Check-out time must be after check-in time.");
+        }
     }
 
     public void updateGuestCount(int newAdultsCount, int newChildrenCount) {
@@ -102,6 +99,4 @@ public class Booking extends BaseEntity {
     private void setConfirmationCode() {
         this.confirmationCode =  RandomStringUtils.randomNumeric(10);
     }
-
-
 }

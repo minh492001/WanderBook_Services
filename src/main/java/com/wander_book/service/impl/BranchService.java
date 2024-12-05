@@ -17,6 +17,7 @@ import com.wander_book.service.IBranchService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ public class BranchService extends BaseServiceImpl<Branch> implements IBranchSer
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BranchDTO> getAllBranches() {
         List<Branch> branches = branchRepository.findAll();
         return branches.stream()
@@ -47,6 +49,7 @@ public class BranchService extends BaseServiceImpl<Branch> implements IBranchSer
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BranchNameDTO> getAllBranchNames() {
         List<Branch> branches = branchRepository.findByDeletedAtIsNull();
         return branches.stream()
@@ -55,6 +58,7 @@ public class BranchService extends BaseServiceImpl<Branch> implements IBranchSer
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BranchDTO getBranchById(Long id) {
         Branch branch = branchRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Branch not found with id: " + id));
@@ -62,6 +66,7 @@ public class BranchService extends BaseServiceImpl<Branch> implements IBranchSer
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BranchDTO> getBranchesByCity(String city) {
         return branchRepository.findByCity(city).stream()
                 .map(branchMapper::toBranchSimpleDTO)

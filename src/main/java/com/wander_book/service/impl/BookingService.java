@@ -1,6 +1,8 @@
 package com.wander_book.service.impl;
 
-import com.wander_book.model.branch.Branch;
+import com.wander_book.dto.request.booking.BookingRequestDTO;
+import com.wander_book.dto.response.BookingResponseDTO;
+import com.wander_book.mapper.BookingMapper;
 import com.wander_book.model.booking.Booking;
 import com.wander_book.model.booking.BookingStatus;
 import com.wander_book.model.room.Room;
@@ -8,17 +10,17 @@ import com.wander_book.model.room.RoomAvailability;
 import com.wander_book.model.user.User;
 import com.wander_book.repository.BookingRepository;
 import com.wander_book.repository.RoomAvailabilityRepository;
-import com.wander_book.dto.request.SimpleBookingRequest;
 import com.wander_book.service.Common.BaseServiceImpl;
 import com.wander_book.service.IBookingService;
-import com.wander_book.service.IBranchService;
 import com.wander_book.service.IRoomService;
 import com.wander_book.service.IUserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.wander_book.service.Common.Utility.*;
 
@@ -26,81 +28,32 @@ import static com.wander_book.service.Common.Utility.*;
 public class BookingService extends BaseServiceImpl<Booking> implements IBookingService {
 
     private final BookingRepository bookingRepository;
-    private final IBranchService branchService;
     private final IRoomService roomService;
     private final IUserService userService;
     private final RoomAvailabilityRepository roomAvailabilityRepository;
+    private final BookingMapper bookingMapper;
 
 
-    public BookingService(BookingRepository bookingRepository, BranchService branchService, RoomService roomService, IUserService userService, RoomAvailabilityRepository roomAvailabilityRepository) {
+    public BookingService(BookingRepository bookingRepository, RoomService roomService, IUserService userService, RoomAvailabilityRepository roomAvailabilityRepository, BookingMapper bookingMapper) {
         this.roomService = roomService;
         this.userService = userService;
         this.roomAvailabilityRepository = roomAvailabilityRepository;
+        this.bookingMapper = bookingMapper;
         this.repository = bookingRepository;
         this.bookingRepository = bookingRepository;
-        this.branchService = branchService;
     }
 
     @Override
-    public List<Booking> findByUser(User user) {
-        return bookingRepository.findByUser(user);
-    }
-
-    @Override
-    public List<Booking> findByBranch(Long id) {
-        Optional<Branch> branchOptional = branchService.findById(id);
-
-        if (branchOptional.isPresent()) {
-            Branch branch = branchOptional.get();
-            return bookingRepository.findByRoom_Branch(branch);
-        }
-
-        // Return an empty list if branch is not found, or you may throw an exception if preferred
-        return List.of();
-    }
-
-    @Override
-    public List<Booking> findByUserEmail(String email) {
-        return bookingRepository.findByUser_Email(email);
-    }
-
-    @Override
-    public Booking findByConfirmationCode(String confirmationCode) {
-        return bookingRepository.findByConfirmationCode(confirmationCode).orElse(null);
-    }
-
-    @Override
-    public List<Booking> findBookingsByStatus(BookingStatus status) {
-        return bookingRepository.findByStatus(status);
-    }
-
-    @Override
-    public List<Booking> findBookingsByRoom(Room room) {
-        return bookingRepository.findByRoom(room);
-    }
-
-    @Override
-    public List<Booking> findActiveBookingsForRoomDuringPeriod(Room room, Long start, Long end) {
-        if (end - start < 86400000L) {
-            throw new IllegalArgumentException("Start date must be at least 1 day before end date.");
-        }
-
-        return bookingRepository.findActiveBookingsForRoomDuringPeriod(room, start, end);
-    }
-
-    @Override
-    public long countBookingsByRoomAndStatus(Room room, BookingStatus status) {
-        return bookingRepository.countByRoomAndStatus(room, status);
-    }
-
-    @Override
-    public Booking createBooking(SimpleBookingRequest bookingRequest) {
+    public BookingResponseDTO createBooking(BookingRequestDTO bookingRequest) {
         if (bookingRequest.getCheckOutTimestamp() - bookingRequest.getCheckInTimestamp() < 86400000L) {
             throw new IllegalArgumentException("Check-in date must be at least 1 day before check-out date.");
         }
 
         Room room = roomService.findById(bookingRequest.getRoomId())
                 .orElseThrow(() -> new EntityNotFoundException("Room not found with id: " + bookingRequest.getRoomId()));
+
+        User user = userService.findById(bookingRequest.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + bookingRequest.getUserId()));
 
         if ((bookingRequest.getAdultsCount() + bookingRequest.getChildrenCount()) > room.getMaxOccupancy()) {
             throw new IllegalArgumentException("Total guests cannot exceed room's max occupancy of " + room.getMaxOccupancy());
@@ -115,23 +68,7 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
             throw new IllegalStateException("The selected room is already booked for the specified time period.");
         }
 
-        User user = userService.findById(bookingRequest.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + bookingRequest.getUserId()));
-
-        Booking booking = Booking.builder()
-                .user(user)
-                .room(room)
-                .checkInTimestamp(bookingRequest.getCheckInTimestamp())
-                .checkOutTimestamp(bookingRequest.getCheckOutTimestamp())
-                .adultsCount(bookingRequest.getAdultsCount())
-                .childrenCount(bookingRequest.getChildrenCount())
-                .totalGuests(bookingRequest.getAdultsCount() + bookingRequest.getChildrenCount())
-                .notes(bookingRequest.getNotes())
-                .status(bookingRequest.getStatus() != null ? bookingRequest.getStatus() : BookingStatus.PENDING) // Set default status to PENDING if null
-                .build();
-
-        booking.initializeBooking();
-
+        Booking booking = bookingMapper.toEntity(bookingRequest, user, room);
         Booking savedBooking = bookingRepository.save(booking);
 
         RoomAvailability roomAvailability = RoomAvailability.builder()
@@ -142,46 +79,11 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
                 .build();
         roomAvailabilityRepository.save(roomAvailability);
 
-        return savedBooking;
+        return bookingMapper.toDTO(savedBooking);
     }
 
     @Override
-    public void confirmBooking(Long bookingId) {
-        Optional<Booking> bookingOptional = bookingRepository.findById(bookingId);
-        if (bookingOptional.isPresent()) {
-            Booking booking = bookingOptional.get();
-            if (!(booking.getStatus() == BookingStatus.PENDING)) {
-                throw new IllegalStateException("Booking is not in the state to be confirmed");
-            }
-            booking.setStatus(BookingStatus.CONFIRMED);
-//            booking.getRoom().setBookRoom();
-            bookingRepository.save(booking);
-        }
-        throw new EntityNotFoundException("Booking not found with id: " + bookingId);
-    }
-
-    @Override
-    public void cancelBooking(Long bookingId) {
-        Optional<Booking> bookingOptional = bookingRepository.findById(bookingId);
-        if (bookingOptional.isPresent()) {
-            Booking booking = bookingOptional.get();
-
-            if (booking.getStatus() == BookingStatus.PENDING || booking.getStatus() == BookingStatus.CONFIRMED) {
-                booking.setStatus(BookingStatus.CANCELED);
-//                booking.getRoom().reopenRoom();
-                roomAvailabilityRepository.deleteByBooking(booking);
-                bookingRepository.save(booking);
-                return;
-            }
-
-            throw new IllegalStateException("Booking is already canceled or completed");
-        }
-
-        throw new EntityNotFoundException("Booking not found with id: " + bookingId);
-    }
-
-    @Override
-    public Booking updateBooking(Long id, SimpleBookingRequest updateBooking) {
+    public BookingResponseDTO updateBooking(Long id, BookingRequestDTO updateBooking) {
 
         if (updateBooking.getCheckOutTimestamp() - updateBooking.getCheckInTimestamp() < 86400000L) {
             throw new IllegalArgumentException("Check-in date must be at least 1 day before check-out date.");
@@ -190,12 +92,12 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
         Room room = roomService.findById(updateBooking.getRoomId())
                 .orElseThrow(() -> new EntityNotFoundException("Room not found with id: " + updateBooking.getRoomId()));
 
+        User user = userService.findById(updateBooking.getUserId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + updateBooking.getUserId()));
+
         if (updateBooking.getTotalGuests() > room.getMaxOccupancy()) {
             throw new IllegalArgumentException("Total guests cannot exceed room's max occupancy of " + room.getMaxOccupancy());
         }
-
-        User user = userService.findById(updateBooking.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + updateBooking.getUserId()));
 
         Optional<Booking> bookingOptional = bookingRepository.findById(id);
 
@@ -246,9 +148,82 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
                 roomAvailabilityRepository.save(availability);
             }
 
-            return updatedBooking;
+            return bookingMapper.toDTO(updatedBooking);
         }
         throw new EntityNotFoundException("Booking not found with id: " + id);
+    }
+
+    @Override
+    public void deleteBooking(Long id) {
+        Optional<Booking> bookingOptional = bookingRepository.findById(id);
+        if (bookingOptional.isPresent()) {
+            Booking booking = bookingOptional.get();
+
+            // Soft delete the booking
+            booking.onDelete();
+
+            // Remove the associated RoomAvailability if any
+            roomAvailabilityRepository.findByBooking(booking)
+                    .ifPresent(roomAvailabilityRepository::delete);
+
+            bookingRepository.save(booking);
+        } else {
+            throw new EntityNotFoundException("Booking not found with id: " + id);
+        }
+    }
+
+    @Override
+    public BookingResponseDTO getBookingById(Long id) {
+        Booking booking = bookingRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Booking not found with ID: " + id));
+        return bookingMapper.toDTO(booking);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getAllBookings() {
+        List<Booking> bookings = bookingRepository.findAll();
+        return bookings.stream().map(bookingMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getBookingsByUserEmail(String email) {
+        List<Booking> bookings = bookingRepository.findByUser_Email(email);
+        return bookings.stream().map(bookingMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getBookingsByUserId(Long userId) {
+        if (!userService.existsById(userId)) {
+            throw new EntityNotFoundException("User not found with ID: " + userId);
+        }
+        List<Booking> bookings = bookingRepository.findByUser(userService.getReferenceById(userId));
+        return bookings.stream().map(bookingMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getBookingsByStatus(BookingStatus status) {
+        List<Booking> bookings = bookingRepository.findByStatus(status);
+        return bookings.stream().map(bookingMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BookingResponseDTO> getActiveBookingsForRoom(Long roomId, Long start, Long end) {
+        Room room = roomService.findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("Room not found with ID: " + roomId));
+        List<Booking> bookings = bookingRepository.findActiveBookingsForRoomDuringPeriod(room, start, end);
+        return bookings.stream().map(bookingMapper::toDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public long countBookingsByRoomAndStatus(Long roomId, BookingStatus status) {
+        Room room = roomService.findById(roomId)
+                .orElseThrow(() -> new EntityNotFoundException("Room not found with ID: " + roomId));
+        return bookingRepository.countByRoomAndStatus(room, status);
     }
 
     @Override
@@ -276,26 +251,6 @@ public class BookingService extends BaseServiceImpl<Booking> implements IBooking
             bookingRepository.save(booking);
         }
         throw new EntityNotFoundException("Booking not found with id: " + id);
-    }
-
-    @Override
-    public void softDeleteById(Long id) {
-        Optional<Booking> bookingOptional = bookingRepository.findById(id);
-        if (bookingOptional.isPresent()) {
-            Booking booking = bookingOptional.get();
-
-            // Soft delete the booking
-            booking.onDelete();
-
-            // Remove the associated RoomAvailability
-            RoomAvailability availability = roomAvailabilityRepository.findByBooking(booking)
-                    .orElseThrow(() -> new EntityNotFoundException("RoomAvailability not found for booking id: " + id));
-            roomAvailabilityRepository.delete(availability);
-
-            bookingRepository.save(booking);
-        } else {
-            throw new EntityNotFoundException("Booking not found with id: " + id);
-        }
     }
 
 }

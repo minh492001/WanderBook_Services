@@ -121,4 +121,15 @@ public class UserService extends BaseServiceImpl<User> implements IUserService {
                 .map(userMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public boolean existsById(Long id) {
+        return userRepository.existsById(id);
+    }
+
+    @Override
+    public User getReferenceById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + id));
+    }
 }

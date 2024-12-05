@@ -1,44 +1,86 @@
 package com.wander_book.service;
 
+import com.wander_book.dto.request.booking.BookingRequestDTO;
+import com.wander_book.dto.response.BookingResponseDTO;
 import com.wander_book.model.booking.Booking;
 import com.wander_book.model.booking.BookingStatus;
-import com.wander_book.model.room.Room;
-import com.wander_book.model.user.User;
-import com.wander_book.dto.request.SimpleBookingRequest;
 import com.wander_book.service.Common.IBaseService;
 
 import java.util.List;
 
 public interface IBookingService extends IBaseService<Booking> {
 
-    List<Booking> findByUser(User user);
+    /**
+     * Add a new booking.
+     * @param requestDTO DTO containing booking information.
+     * @return BookingResponseDTO containing created booking information.
+     */
+    BookingResponseDTO createBooking(BookingRequestDTO requestDTO);
 
-    List<Booking> findByBranch(Long id);
+    /**
+     * Update an existing booking by ID.
+     * @param id The ID of the booking to update.
+     * @param requestDTO DTO containing updated booking information.
+     * @return BookingResponseDTO containing updated booking information.
+     */
+    BookingResponseDTO updateBooking(Long id, BookingRequestDTO requestDTO);
 
-    List<Booking> findByUserEmail(String email);
+    /**
+     * Delete a booking by ID.
+     * @param id The ID of the booking to delete.
+     */
+    void deleteBooking(Long id);
 
-    Booking findByConfirmationCode(String confirmationCode);
+    /**
+     * Get a booking by its ID.
+     * @param id The ID of the booking.
+     * @return BookingResponseDTO containing the booking details.
+     */
+    BookingResponseDTO getBookingById(Long id);
 
-    List<Booking> findBookingsByStatus(BookingStatus status);
+    /**
+     * Get all bookings without pagination.
+     * @return List of BookingResponseDTO.
+     */
+    List<BookingResponseDTO> getAllBookings();
 
-    List<Booking> findBookingsByRoom(Room room);
+    /**
+     * Get bookings by user email.
+     * @param email User email.
+     * @return List of BookingResponseDTO.
+     */
+    List<BookingResponseDTO> getBookingsByUserEmail(String email);
 
-    // Find active bookings for a specific room during a time period
-    List<Booking> findActiveBookingsForRoomDuringPeriod(Room room, Long start, Long end);
+    /**
+     * Get bookings by user ID.
+     * @param userId User ID.
+     * @return List of BookingResponseDTO.
+     */
+    List<BookingResponseDTO> getBookingsByUserId(Long userId);
 
-    // Count bookings by room and status
-    long countBookingsByRoomAndStatus(Room room, BookingStatus status);
+    /**
+     * Get bookings by booking status.
+     * @param status Booking status.
+     * @return List of BookingResponseDTO.
+     */
+    List<BookingResponseDTO> getBookingsByStatus(BookingStatus status);
 
-    // Create a new booking
-    Booking createBooking(SimpleBookingRequest bookingRequest);
+    /**
+     * Get active bookings for a specific room during a time period.
+     * @param roomId Room ID.
+     * @param start Start timestamp.
+     * @param end End timestamp.
+     * @return List of BookingResponseDTO.
+     */
+    List<BookingResponseDTO> getActiveBookingsForRoom(Long roomId, Long start, Long end);
 
-    void confirmBooking(Long bookingId);
+    /**
+     * Count bookings by room and status.
+     * @param roomId Room ID.
+     * @param status Booking status.
+     * @return Count of bookings.
+     */
+    long countBookingsByRoomAndStatus(Long roomId, BookingStatus status);
 
-    void  cancelBooking(Long bookingId);
-
-    Booking updateBooking(Long id, SimpleBookingRequest updateBooking);
-
-    void extendBooking(Long bookingId, Long newCheckOutTimestamp);
-
-    void softDeleteById(Long id);
+    void extendBooking(Long id, Long newCheckOutTimestamp);
 }

@@ -1,5 +1,6 @@
 package com.wander_book.dto.request.room;
 
+import com.wander_book.dto.response.RoomAvailabilityDTO;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,4 +25,5 @@ public class RoomDetailsDTO {
     private String photo;
     private RoomState state;
     private Long branchId;
+    private List<RoomAvailabilityDTO> availabilities;
 }

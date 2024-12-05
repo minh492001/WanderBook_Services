@@ -6,6 +6,7 @@ import com.wander_book.dto.request.room.SimpleRoomDTO;
 import com.wander_book.mapper.RoomMapper;
 import com.wander_book.model.branch.Branch;
 import com.wander_book.model.room.Room;
+import com.wander_book.model.room.RoomAvailability;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
 import com.wander_book.repository.BranchRepository;
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
@@ -31,32 +33,29 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     private final RoomRepository roomRepository;
     private final IBranchService branchService;
     private final RoomAvailabilityRepository roomAvailabilityRepository;
-    private final BranchRepository branchRepository;
     private final RoomMapper roomMapper;
 
     @Autowired
-    public RoomService(RoomRepository roomRepository, IBranchService branchService, RoomAvailabilityRepository roomAvailabilityRepository, BranchRepository branchRepository, RoomMapper roomMapper) {
+    public RoomService(RoomRepository roomRepository, IBranchService branchService, RoomAvailabilityRepository roomAvailabilityRepository, RoomMapper roomMapper) {
         this.repository = roomRepository;
         this.roomRepository = roomRepository;
         this.branchService = branchService;
         this.roomAvailabilityRepository = roomAvailabilityRepository;
-        this.branchRepository = branchRepository;
         this.roomMapper = roomMapper;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SimpleRoomDTO> getAllRooms() {
-        return roomRepository.findAll()
-                .stream()
-                .map(roomMapper::toSimpleRoomDTO)
-                .toList();
+        List<Room> rooms = attachRoomAvailabilities(roomRepository.findAll());
+        return rooms.stream().map(roomMapper::toSimpleRoomDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<SimpleRoomDTO> findByRoomId(long id) {
         return roomRepository.findById(id)
+                .map(this::attachRoomAvailabilities)
                 .map(roomMapper::toSimpleRoomDTO);
     }
 
@@ -64,6 +63,7 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     @Transactional(readOnly = true)
     public Optional<SimpleRoomDTO> findByRoomNumber(String roomNumber) {
         return roomRepository.findByRoomNumber(roomNumber)
+                .map(this::attachRoomAvailabilities)
                 .map(roomMapper::toSimpleRoomDTO);
     }
 
@@ -76,89 +76,72 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
     @Override
     @Transactional(readOnly = true)
     public List<SimpleRoomDTO> findByState(RoomState state) {
-        return roomRepository.findByState(state)
-                .stream()
-                .map(roomMapper::toSimpleRoomDTO)
-                .toList();
+        List<Room> rooms = attachRoomAvailabilities(roomRepository.findByState(state));
+        return rooms.stream().map(roomMapper::toSimpleRoomDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SimpleRoomDTO> findByBranchIdAndState(Long branchId, RoomState state) {
-        return roomRepository.findByBranchIdAndState(branchId, state)
-                .stream()
-                .map(roomMapper::toSimpleRoomDTO)
-                .toList();
+        List<Room> rooms = attachRoomAvailabilities(roomRepository.findByBranchIdAndState(branchId, state));
+        return rooms.stream().map(roomMapper::toSimpleRoomDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SimpleRoomDTO> findByRoomTypeAndPriceRange(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
-        return roomRepository.findByRoomTypeAndPriceRange(roomType, minPrice, maxPrice)
-                .stream()
-                .map(roomMapper::toSimpleRoomDTO)
-                .toList();
+        List<Room> rooms = attachRoomAvailabilities(roomRepository.findByRoomTypeAndPriceRange(roomType, minPrice, maxPrice));
+        return rooms.stream().map(roomMapper::toSimpleRoomDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SimpleRoomDTO> findByBranchIdAndRoomTypeAndPriceRange(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
-        return roomRepository.findByBranchIdAndRoomTypeAndPriceRange(branchId, roomType, minPrice, maxPrice)
-                .stream()
-                .map(roomMapper::toSimpleRoomDTO)
-                .toList();
+        List<Room> rooms = attachRoomAvailabilities(roomRepository.findByBranchIdAndRoomTypeAndPriceRange(branchId, roomType, minPrice, maxPrice));
+        return rooms.stream().map(roomMapper::toSimpleRoomDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RoomDetailsDTO> getAllRoomsWithPhoto() {
-        return roomRepository.findAll()
-                .stream()
-                .map(roomMapper::toRoomDetailsDTO)
-                .toList();
+        List<Room> rooms = attachRoomAvailabilities(roomRepository.findAll());
+        return rooms.stream().map(roomMapper::toRoomDetailsDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<RoomDetailsDTO> findByRoomNumberWithPhoto(String roomNumber) {
         return roomRepository.findByRoomNumber(roomNumber)
+                .map(this::attachRoomAvailabilities)
                 .map(roomMapper::toRoomDetailsDTO);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RoomDetailsDTO> getRoomsByBranchIdWithPhoto(Long branchId) {
-        return roomRepository.findByBranchIdAndState(branchId, RoomState.OPEN)
-                .stream()
-                .map(roomMapper::toRoomDetailsDTO)
-                .toList();
+        List<Room> rooms = attachRoomAvailabilities(roomRepository.findByBranchId(branchId));
+        return rooms.stream().map(roomMapper::toRoomDetailsDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RoomDetailsDTO> findByBranchIdAndStateWithPhoto(Long branchId, RoomState state) {
-        return roomRepository.findByBranchIdAndState(branchId, state)
-                .stream()
-                .map(roomMapper::toRoomDetailsDTO)
-                .toList();
+        List<Room> rooms = attachRoomAvailabilities(roomRepository.findByBranchIdAndState(branchId, state));
+        return rooms.stream().map(roomMapper::toRoomDetailsDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RoomDetailsDTO> findByRoomTypeAndPriceRangeWithPhoto(RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
-        return roomRepository.findByRoomTypeAndPriceRange(roomType, minPrice, maxPrice)
-                .stream()
-                .map(roomMapper::toRoomDetailsDTO)
-                .toList();
+        List<Room> rooms = attachRoomAvailabilities(roomRepository.findByRoomTypeAndPriceRange(roomType, minPrice, maxPrice));
+        return rooms.stream().map(roomMapper::toRoomDetailsDTO).toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RoomDetailsDTO> findByBranchIdAndRoomTypeAndPriceRangeWithPhoto(Long branchId, RoomType roomType, BigDecimal minPrice, BigDecimal maxPrice) {
-        return roomRepository.findByBranchIdAndRoomTypeAndPriceRange(branchId, roomType, minPrice, maxPrice)
-                .stream()
-                .map(roomMapper::toRoomDetailsDTO)
-                .toList();
+        List<Room> rooms = attachRoomAvailabilities(roomRepository.findByBranchIdAndRoomTypeAndPriceRange(branchId, roomType, minPrice, maxPrice));
+        return rooms.stream().map(roomMapper::toRoomDetailsDTO).toList();
     }
 
     @Override
@@ -231,7 +214,6 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
         return room.getPhoto();
     }
 
-//    @Override
 //    public List<RoomResponse> getRoomsWithBookings() {
 //        List<Room> rooms = roomRepository.findAll();
 //        Long currentTimestamp = System.currentTimeMillis();
@@ -244,8 +226,7 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
 //
 //        return rooms.stream().map(roomMapper::toDto).collect(Collectors.toList());
 //    }
-
-//    @Override
+//
 //    public List<RoomResponse> getRoomsWithBookingsByBranch(Long branchId) {
 //        Branch branch = branchService.findById(branchId)
 //                .orElseThrow(() -> new IllegalArgumentException("Branch not found with ID: " + branchId));
@@ -260,4 +241,21 @@ public class RoomService extends BaseServiceImpl<Room> implements IRoomService {
 //
 //        return rooms.stream().map(roomMapper::toDto).collect(Collectors.toList());
 //    }
+private List<Room> attachRoomAvailabilities(List<Room> rooms) {
+    Long currentTimestamp = System.currentTimeMillis();
+
+    rooms.forEach(room -> {
+        List<RoomAvailability> futureBookings = roomAvailabilityRepository.findFutureBookingsByRoom(room, currentTimestamp);
+        room.setFutureBookings(futureBookings);
+    });
+
+    return rooms;
+}
+
+    private Room attachRoomAvailabilities(Room room) {
+        Long currentTimestamp = System.currentTimeMillis();
+        List<RoomAvailability> futureBookings = roomAvailabilityRepository.findFutureBookingsByRoom(room, currentTimestamp);
+        room.setFutureBookings(futureBookings);
+        return room;
+    }
 }

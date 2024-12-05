@@ -1,5 +1,6 @@
 package com.wander_book.repository;
 
+import com.wander_book.model.branch.Branch;
 import com.wander_book.model.room.Room;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
@@ -16,6 +17,9 @@ import java.util.Optional;
 public interface RoomRepository extends BaseRepository<Room> {
 
     Optional<Room> findByRoomNumber(String roomNumber);
+    
+    @Query("SELECT r FROM Room r WHERE r.branch.id = :branchId")
+    List<Room> findByBranchId(@Param("branchId") Long branchId);
 
     boolean existsByRoomNumber(String roomNumber);
 

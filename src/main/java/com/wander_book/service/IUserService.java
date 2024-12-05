@@ -27,4 +27,8 @@ public interface IUserService extends IBaseService<User> {
     UserResponseDTO updateUser(Long id, editUserRequest updatedUser);
 
     void resetPassword(String email, ResetPasswordRequest resetPasswordRequest);
+
+    boolean existsById(Long id);
+
+    User getReferenceById(Long id);
 }

@@ -31,7 +31,11 @@ public class ServiceReservation extends BaseEntity {
 
     @PostConstruct
     public void initializeServiceReservation() {
-        this.onCreate();
+        this.totalPrice =  this.price.multiply(BigDecimal.valueOf(this.quantity));
+    }
+
+    @Override
+    protected void beforeUpdate(){
         this.totalPrice =  this.price.multiply(BigDecimal.valueOf(this.quantity));
     }
 }

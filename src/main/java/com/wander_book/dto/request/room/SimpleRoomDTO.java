@@ -1,5 +1,6 @@
 package com.wander_book.dto.request.room;
 
+import com.wander_book.dto.response.RoomAvailabilityDTO;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -21,4 +23,5 @@ public class SimpleRoomDTO {
     private int maxOccupancy;
     private RoomState state;
     private String branchName;
+    private List<RoomAvailabilityDTO> availabilities;
 }

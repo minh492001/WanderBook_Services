@@ -22,12 +22,18 @@ public abstract class BaseEntity {
     @PrePersist
     protected void onCreate() {
         this.createdAt = System.currentTimeMillis();
+        beforePersist();
     }
 
     @PreUpdate
     public void onUpdate() {
         this.updatedAt = System.currentTimeMillis();
+        beforeUpdate();
     }
+
+    protected void beforePersist() {}
+
+    protected void beforeUpdate() {}
 
     @PreRemove
     public void onDelete() {

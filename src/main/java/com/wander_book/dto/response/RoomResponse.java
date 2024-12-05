@@ -13,5 +13,5 @@ public class RoomResponse {
     private BigDecimal pricePerNight;
     private int maxOccupancy;
     private String state;
-    private List<RoomAvailabilityResponse> futureBookings;
+    private List<RoomAvailabilityDTO> futureBookings;
 }
