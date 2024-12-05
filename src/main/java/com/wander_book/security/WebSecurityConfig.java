@@ -60,7 +60,8 @@ public class WebSecurityConfig {
                                 "/api/v2/forgot-password/**",
                                 "/api/v2/branches/**",
                                 "/api/v2/rooms/**",
-                                "/api/v2/enums/**")
+                                "/api/v2/enums/**",
+                                "/api/v2/services/**")
                         .permitAll()
                         .anyRequest().authenticated());
 

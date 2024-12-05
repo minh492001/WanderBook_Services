@@ -1,10 +1,13 @@
 package com.wander_book.exception.comon;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.wander_book.exception.auth.UserAlreadyExistsException;
 import com.wander_book.exception.user.PasswordMismatchException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +20,27 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleInvalidFormatException(HttpMessageNotReadableException ex) {
+        Throwable cause = ex.getCause();
+        if (cause instanceof InvalidFormatException invalidFormatException) {
+
+            String fieldName = invalidFormatException.getPath().stream()
+                    .map(JsonMappingException.Reference::getFieldName)
+                    .findFirst()
+                    .orElse("Unknown field");
+
+            String errorMessage = String.format("Field '%s' has invalid value '%s'. Expected type: %s",
+                    fieldName,
+                    invalidFormatException.getValue(),
+                    invalidFormatException.getTargetType().getSimpleName());
+
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
+
+        return ResponseEntity.badRequest().body("Malformed JSON request.");
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {

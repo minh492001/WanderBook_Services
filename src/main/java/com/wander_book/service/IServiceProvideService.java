@@ -1,7 +1,9 @@
 package com.wander_book.service;
 
+import com.wander_book.dto.request.service.ServiceProvideRequestDTO;
+import com.wander_book.dto.request.service.ServiceProvideResponseDTO;
+import com.wander_book.dto.request.service.SimpleServiceDTO;
 import com.wander_book.model.service_provide.ServiceProvide;
-import com.wander_book.dto.request.service.SimpleService;
 import com.wander_book.service.Common.IBaseService;
 
 import java.math.BigDecimal;
@@ -9,19 +11,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IServiceProvideService extends IBaseService<ServiceProvide> {
-    // Check if a service exists by ID
     boolean existsById(Long id);
+    List<ServiceProvideResponseDTO> getAllServicesAsResponseDTO();
 
-    ServiceProvide addService(SimpleService simpleService);
-    // Find a service by its name
-    Optional<ServiceProvide> findByServiceName(String serviceName);
+    List<SimpleServiceDTO> getAllServicesAsSimpleDTO();
 
-    // Find services within a specific price range
-    List<ServiceProvide> findByPriceRange(BigDecimal minPrice, BigDecimal maxPrice);
+    Optional<ServiceProvideResponseDTO> findByServiceName(String serviceName);
 
-    // Save a new or updated service
-    ServiceProvide saveService(Long id, SimpleService updateService);
+    ServiceProvideResponseDTO getServiceById(Long id);
 
-    // Delete a service by ID (soft delete can be applied here if needed)
+    List<ServiceProvideResponseDTO> findByPriceRange(BigDecimal minPrice, BigDecimal maxPrice);
+
+    ServiceProvideResponseDTO addService(ServiceProvideRequestDTO request);
+
+    ServiceProvideResponseDTO updateService(Long id, ServiceProvideRequestDTO request);
+
     void deleteById(Long id);
 }

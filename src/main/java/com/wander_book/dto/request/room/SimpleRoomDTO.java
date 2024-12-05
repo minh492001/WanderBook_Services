@@ -19,7 +19,6 @@ public class SimpleRoomDTO {
     private RoomType roomType;
     private BigDecimal pricePerNight;
     private int maxOccupancy;
-    private String description;
     private RoomState state;
     private String branchName;
 }

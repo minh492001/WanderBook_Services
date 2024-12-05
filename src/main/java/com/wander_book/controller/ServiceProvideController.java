@@ -1,8 +1,10 @@
 package com.wander_book.controller;
 
 
+import com.wander_book.dto.request.service.ServiceProvideRequestDTO;
+import com.wander_book.dto.request.service.SimpleServiceDTO;
 import com.wander_book.model.service_provide.ServiceProvide;
-import com.wander_book.dto.request.service.SimpleService;
+import com.wander_book.dto.request.service.ServiceProvideResponseDTO;
 import com.wander_book.service.IServiceProvideService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,7 +20,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v2/services")
 @RequiredArgsConstructor
-@PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
 public class ServiceProvideController {
     private final IServiceProvideService serviceProvideService;
 
@@ -27,33 +28,31 @@ public class ServiceProvideController {
         return ResponseEntity.ok("hello");
     }
 
-    // Get all services
-//    @GetMapping("/all")
-//    public ResponseEntity<List<ServiceProvide>> getAllServices() {
-//        List<ServiceProvide> services = serviceProvideService.findAll();
-//        return ResponseEntity.ok(services);
-//    }
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('USER')")
+    @GetMapping("/all")
+    public ResponseEntity<List<ServiceProvideResponseDTO>> getAllServicesAsResponseDTO() {
+        List<ServiceProvideResponseDTO> services = serviceProvideService.getAllServicesAsResponseDTO();
+        return ResponseEntity.ok(services);
+    }
+
+    @GetMapping("/all-names")
+    public ResponseEntity<List<SimpleServiceDTO>> getAllServicesAsSimpleDTO() {
+        List<SimpleServiceDTO> services = serviceProvideService.getAllServicesAsSimpleDTO();
+        return ResponseEntity.ok(services);
+    }
 
     // Get service by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getServiceById(@PathVariable Long id) {
-        try {
-            Optional<ServiceProvide> service = serviceProvideService.findByIdAndNotDeleted(id);
-            return ResponseEntity.ok(service);
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Service not found");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching service");
-        }
+        return ResponseEntity.ok(serviceProvideService.getServiceById(id));
     }
 
     // Get services within a price range
     @GetMapping("/price-range")
-    public ResponseEntity<List<ServiceProvide>> getServicesByPriceRange(
+    public ResponseEntity<List<ServiceProvideResponseDTO>> findByPriceRange(
             @RequestParam BigDecimal minPrice,
             @RequestParam BigDecimal maxPrice) {
-        List<ServiceProvide> services = serviceProvideService.findByPriceRange(minPrice, maxPrice);
-        return ResponseEntity.ok(services);
+        return ResponseEntity.ok(serviceProvideService.findByPriceRange(minPrice, maxPrice));
     }
 
     // Check if a service exists by ID
@@ -64,40 +63,33 @@ public class ServiceProvideController {
     }
 
     // Get a service by name
-    @GetMapping("/name/{serviceName}")
-    public ResponseEntity<?> getServiceByName(@PathVariable("serviceName") String serviceName) {
-        try {
-            Optional<ServiceProvide> service = serviceProvideService.findByServiceName(serviceName);
+    @GetMapping("/name")
+    public ResponseEntity<Optional<ServiceProvideResponseDTO>> findByServiceName(@RequestParam String serviceName) {
+        Optional<ServiceProvideResponseDTO> service = serviceProvideService.findByServiceName(serviceName);
+
+        if (service.isPresent()) {
             return ResponseEntity.ok(service);
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Service not found");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching service");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.empty());
         }
     }
 
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ServiceProvide> addService(@RequestBody SimpleService simpleService) {
-        ServiceProvide newService = serviceProvideService.addService(simpleService);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newService);
+    public ResponseEntity<ServiceProvideResponseDTO> addService(@RequestBody ServiceProvideRequestDTO request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(serviceProvideService.addService(request));
     }
 
     // Create or update a service
-    @PostMapping("/{id}")
-    public ResponseEntity<?> saveService(@PathVariable Long id, @RequestBody SimpleService serviceEdit) {
-        try {
-            ServiceProvide updated = serviceProvideService.saveService(id, serviceEdit);
-            return ResponseEntity.status(HttpStatus.CREATED).body(updated);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("An error occurred while updating the service");
-        }
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<ServiceProvideResponseDTO> updateService(@PathVariable Long id, @RequestBody ServiceProvideRequestDTO request) {
+        return ResponseEntity.ok(serviceProvideService.updateService(id, request));
     }
 
     // Delete a service by ID
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deleteServiceById(@PathVariable Long id) {
         serviceProvideService.deleteById(id);
         return ResponseEntity.ok("Service deleted successfully.");

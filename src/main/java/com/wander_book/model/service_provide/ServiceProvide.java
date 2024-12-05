@@ -2,8 +2,7 @@ package com.wander_book.model.service_provide;
 
 import com.wander_book.model.comon.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -12,6 +11,9 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class ServiceProvide extends BaseEntity {
 
     private String serviceName;
@@ -21,8 +23,4 @@ public class ServiceProvide extends BaseEntity {
 
     @OneToMany(mappedBy = "serviceProvide", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<ServiceReservation> bookings = new ArrayList<>();
-
-    public ServiceProvide() {
-        super();
-    }
 }
