@@ -9,7 +9,6 @@ import com.wander_book.model.room.Room;
 import com.wander_book.model.room.RoomAvailability;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
-import com.wander_book.repository.BranchRepository;
 import com.wander_book.repository.RoomAvailabilityRepository;
 import com.wander_book.repository.RoomRepository;
 import com.wander_book.dto.request.room.RoomUpdateRequest;
@@ -25,7 +24,6 @@ import java.math.BigDecimal;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class RoomService extends BaseServiceImpl<Room> implements IRoomService {

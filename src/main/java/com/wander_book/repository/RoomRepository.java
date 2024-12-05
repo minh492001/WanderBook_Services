@@ -1,6 +1,5 @@
 package com.wander_book.repository;
 
-import com.wander_book.model.branch.Branch;
 import com.wander_book.model.room.Room;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;

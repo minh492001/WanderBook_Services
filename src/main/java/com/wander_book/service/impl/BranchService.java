@@ -4,8 +4,6 @@ import com.wander_book.dto.request.branch.CreateBranchRequest;
 import com.wander_book.dto.request.branch.UpdateBranchRequest;
 import com.wander_book.mapper.BranchMapper;
 import com.wander_book.model.branch.Branch;
-import com.wander_book.model.room.Room;
-import com.wander_book.model.service_provide.ServiceProvide;
 import com.wander_book.repository.BranchRepository;
 import com.wander_book.repository.RoomRepository;
 import com.wander_book.repository.ServiceProvideRepository;

@@ -2,7 +2,6 @@ package com.wander_book.controller;
 
 import com.wander_book.dto.request.room.RoomDetailsDTO;
 import com.wander_book.dto.request.room.SimpleRoomDTO;
-import com.wander_book.dto.response.RoomResponse;
 import com.wander_book.model.room.RoomState;
 import com.wander_book.model.room.RoomType;
 import com.wander_book.dto.request.room.AddNewRoomRequest;
